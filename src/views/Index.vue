@@ -119,7 +119,6 @@ export default {
       this.readingRecent = JSON.parse(readingRecentStr);
     }
     if (this.shelf.length == 0) {
-      if (localStorage.url) {
         this.loading = this.$loading({
           target: this.$refs.shelfWrapper,
           lock: true,
@@ -128,7 +127,7 @@ export default {
           background: "rgb(247,247,247)"
         });
         const that = this;
-        Axios.get("http://" + localStorage.url + "/getBookshelf", {
+        Axios.get("/getBookshelf", {
           timeout: 3000
         })
           .then(function(response) {
@@ -138,77 +137,22 @@ export default {
             that.$store.commit("addBooks", response.data.data);
             that.$store.commit(
               "setConnectStatus",
-              "已连接 " + localStorage.url
+              "已连接 "
             );
             that.$store.commit("setNewConnect", false);
           })
           .catch(function(error) {
             that.loading.close();
             that.$store.commit("setConnectType", "danger");
-            that.$store.commit("setConnectStatus", "点击设置后端 url 与 端口");
+            that.$store.commit("setConnectStatus", "连接失败");
             that.$message.error("后端连接失败");
             that.$store.commit("setNewConnect", false);
             throw error;
           });
-      } else {
-        this.$message.error("请先设置后端 url 与端口");
-        this.$store.commit("setConnectStatus", "点击设置后端 url 与 端口");
-        this.$store.commit("setNewConnect", false);
-        this.$store.commit("setConnectType", "danger");
-      }
     }
   },
   methods: {
     setIP() {
-      const that = this;
-      this.$prompt("请输入 IP 和端口 ( 如：127.0.0.1:9527 )", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputPattern: /^((2[0-4]\d|25[0-5]|[1]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[1]?\d\d?):([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-6][0-5][0-5][0-3][0-5])$/,
-        inputErrorMessage: "url 形式不正确",
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            that.$store.commit("setNewConnect", true);
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "校验中……";
-            Axios.get("http://" + instance.inputValue + "/getBookshelf", {
-              timeout: 3000
-            })
-              .then(function(response) {
-                instance.confirmButtonLoading = false;
-                that.$store.commit(
-                  "increaseBookNum",
-                  response.data.data.length
-                );
-                that.$store.commit("addBooks", response.data.data);
-                that.$store.commit("setConnectType", "success");
-                that.$store.commit(
-                  "setConnectStatus",
-                  "已连接 " + localStorage.url
-                );
-                that.$store.commit("setNewConnect", false);
-                done();
-              })
-              .catch(function(error) {
-                instance.confirmButtonLoading = false;
-                instance.confirmButtonText = "确定";
-                that.$message.error("访问失败，请检查您输入的 url");
-                that.$store.commit("setNewConnect", false);
-                throw error;
-              });
-          } else {
-            done();
-          }
-        }
-      })
-        .then(({ value }) => {
-          localStorage.url = value;
-          this.$message({
-            type: "success",
-            message: "与" + value + "连接成功"
-          });
-        })
-        .catch(() => {});
     },
     toDetail(bookUrl, bookName) {
       sessionStorage.setItem("bookUrl", bookUrl);

@@ -41,9 +41,7 @@ export default {
   mounted() {
     const that = this;
     Axios.get(
-      "http://" +
-        localStorage.url +
-        "/getChapterList?url=" +
+      "/getChapterList?url=" +
         encodeURIComponent(sessionStorage.getItem("bookUrl"))
     ).then(
       res => {
