@@ -156,6 +156,27 @@ export default {
         that.$store.commit("setReadingBook", book);
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
+        window.addEventListener('keyup', function (event) {
+          console.log(event);
+          switch (event.key) {
+            case 'ArrowLeft':
+              event.stopPropagation();
+              that.toLastChapter();
+              break;
+            case 'ArrowRight':
+              event.stopPropagation();
+              that.toNextChapter();
+              break;
+            case 'ArrowUp':
+              event.stopPropagation();
+              document.documentElement.scrollTop = document.documentElement.scrollTop - document.documentElement.clientHeight + 100;
+              break;
+            case 'ArrowDown':
+              event.stopPropagation();
+              document.documentElement.scrollTop = document.documentElement.scrollTop + document.documentElement.clientHeight - 100;
+              break;
+          }
+        });
       },
       err => {
         that.loading.close();
