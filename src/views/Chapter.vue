@@ -157,7 +157,6 @@ export default {
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
         window.addEventListener('keyup', function (event) {
-          console.log(event);
           switch (event.key) {
             case 'ArrowLeft':
               event.stopPropagation();
