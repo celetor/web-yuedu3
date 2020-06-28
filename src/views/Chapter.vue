@@ -139,12 +139,13 @@ export default {
     const that = this;
     let bookUrl = sessionStorage.getItem("bookUrl");
     let bookName = sessionStorage.getItem("bookName");
+    let chapterIndex = sessionStorage.getItem("chapterIndex") || 0;
     var book = JSON.parse(localStorage.getItem(bookUrl));
     if (book == null) {
       book = {
         bookName: bookName,
         bookUrl: bookUrl,
-        index: 0
+        index: chapterIndex
       };
       localStorage.setItem(bookUrl, JSON.stringify(book));
     }
