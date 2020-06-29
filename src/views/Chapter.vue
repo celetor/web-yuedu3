@@ -160,19 +160,31 @@ export default {
           switch (event.key) {
             case 'ArrowLeft':
               event.stopPropagation();
+              event.preventDefault();
               that.toLastChapter();
               break;
             case 'ArrowRight':
               event.stopPropagation();
+              event.preventDefault();
               that.toNextChapter();
               break;
             case 'ArrowUp':
               event.stopPropagation();
-              document.documentElement.scrollTop = document.documentElement.scrollTop - document.documentElement.clientHeight + 100;
+              event.preventDefault();
+              if (document.documentElement.scrollTop === 0) {
+                that.$message.warning('已到达页面顶部');
+              } else {
+                jump(0 - document.documentElement.clientHeight + 100);
+              }
               break;
             case 'ArrowDown':
               event.stopPropagation();
-              document.documentElement.scrollTop = document.documentElement.scrollTop + document.documentElement.clientHeight - 100;
+              event.preventDefault();
+              if(document.documentElement.clientHeight + document.documentElement.scrollTop === document.documentElement.scrollHeight){
+                that.$message.warning('已到达页面底部');
+              } else {
+                jump(document.documentElement.clientHeight - 100);
+              }
               break;
           }
         });
@@ -364,13 +376,23 @@ export default {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index++;
-      this.getContent(index);
+      if(typeof this.$store.state.readingBook.catalog[index] !== "undefined"){
+        this.$message.info('下一章');
+        this.getContent(index);
+      } else {
+        this.$message.error('本章是最后一章');
+      }
     },
     toLastChapter() {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index--;
-      this.getContent(index);
+      if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
+        this.$message.info('上一章');
+        this.getContent(index);
+      } else {
+        this.$message.error('本章是第一章');
+      }
     },
     toShelf() {
       this.$router.push("/");
