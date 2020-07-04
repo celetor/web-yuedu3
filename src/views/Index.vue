@@ -25,7 +25,7 @@
           <el-tag
             type="warning"
             class="recent-book"
-            @click="toDetail(readingRecent.url, readingRecent.name)"
+            @click="toDetail(readingRecent.url, readingRecent.name, readingRecent.chapterIndex)"
             :class="{ 'no-point': readingRecent.url == '' }"
           >
             {{ readingRecent.name }}
@@ -62,7 +62,7 @@
             class="book"
             v-for="book in shelf"
             :key="book.noteUrl"
-            @click="toDetail(book.bookUrl, book.name)"
+            @click="toDetail(book.bookUrl, book.name, book.durChapterIndex)"
           >
             <div class="cover-img">
               <img
@@ -77,7 +77,7 @@
             <div
               class="info"
               @click="
-                toDetail(book.bookUrl, book.name)
+                toDetail(book.bookUrl, book.name, book.durChapterIndex)
               "
             >
               <div class="name">{{ book.name }}</div>
@@ -108,7 +108,8 @@ export default {
       search: "",
       readingRecent: {
         name: "尚无阅读记录",
-        url: ""
+        url: "",
+        chapterIndex: 0
       }
     };
   },
@@ -117,6 +118,9 @@ export default {
     let readingRecentStr = localStorage.getItem("readingRecent");
     if (readingRecentStr != null) {
       this.readingRecent = JSON.parse(readingRecentStr);
+      if (typeof this.readingRecent.chapterIndex == "undefined") {
+        this.readingRecent.chapterIndex = 0;
+      }
     }
     if (this.shelf.length == 0) {
         this.loading = this.$loading({
@@ -134,7 +138,11 @@ export default {
             that.loading.close();
             that.$store.commit("setConnectType", "success");
             that.$store.commit("increaseBookNum", response.data.data.length);
-            that.$store.commit("addBooks", response.data.data);
+            that.$store.commit("addBooks", response.data.data.sort(function (a, b) {
+              var x = a["durChapterTime"] || 0;
+              var y = b["durChapterTime"] || 0;
+              return y - x;
+            }));
             that.$store.commit(
               "setConnectStatus",
               "已连接 "
@@ -154,12 +162,14 @@ export default {
   methods: {
     setIP() {
     },
-    toDetail(bookUrl, bookName) {
+    toDetail(bookUrl, bookName, chapterIndex) {
       sessionStorage.setItem("bookUrl", bookUrl);
       sessionStorage.setItem("bookName", bookName);
+      sessionStorage.setItem("chapterIndex", chapterIndex);
       this.readingRecent = {
         name: bookName,
-        url: bookUrl
+        url: bookUrl,
+        chapterIndex: chapterIndex
       };
       localStorage.setItem("readingRecent", JSON.stringify(this.readingRecent));
       this.$router.push({
