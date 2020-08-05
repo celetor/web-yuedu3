@@ -27,7 +27,6 @@ jobs:
           npm install vue-cli -g
 
       - name: Build web-yuedu3 Project
-        uses: actions/checkout@v2
         run: |
           npm install
           npm build
