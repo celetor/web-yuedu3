@@ -12,19 +12,7 @@ jobs:
       - name: Checkout web-yuedu3 Project
         uses: actions/checkout@v2
         with:
-          ref: master
-
-      # - name: Node.js Install
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: '12'
-      #     check-latest: true
-
-#      - name: Vue2 install
-#        run: |
-#          npm install webpack -g
-#          npm install vue
-#          npm install vue-cli -g
+          ref: slave
 
       - name: Build web-yuedu3 Project
         run: |
@@ -34,6 +22,6 @@ jobs:
       - name: Upload Files
         uses: actions/upload-artifact@v2
         with:
-          name: web-yuedu3
+          name: dist_slave
           path: dist
           if-no-files-found: error
