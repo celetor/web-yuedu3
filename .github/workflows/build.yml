@@ -20,16 +20,16 @@ jobs:
       #     node-version: '12'
       #     check-latest: true
 
-      - name: Vue2 install
-        run: |
-          npm install webpack -g
-          npm install vue
-          npm install vue-cli -g
+#      - name: Vue2 install
+#        run: |
+#          npm install webpack -g
+#          npm install vue
+#          npm install vue-cli -g
 
       - name: Build web-yuedu3 Project
         run: |
           npm install
-          npm build
+          npm run-script build
 
       - name: Upload Files
         uses: actions/upload-artifact@v2
