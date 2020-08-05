@@ -1,4 +1,4 @@
-name: Vue2 Build
+name: Master Branch Build
 
 on:
   watch:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout web-yuedu3 Project
         uses: actions/checkout@v2
         with:
-          ref: slave
+          ref: master
 
       - name: Build web-yuedu3 Project
         run: |
@@ -22,6 +22,6 @@ jobs:
       - name: Upload Files
         uses: actions/upload-artifact@v2
         with:
-          name: dist_slave
+          name: dist_master
           path: dist
           if-no-files-found: error
