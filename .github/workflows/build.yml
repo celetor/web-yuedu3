@@ -1,0 +1,40 @@
+name: Vue2 Build
+
+on:
+  watch:
+    types: [started]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout web-yuedu3 Project
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      # - name: Node.js Install
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '12'
+      #     check-latest: true
+
+      - name: Vue2 install
+        run: |
+          npm install webpack -g
+          npm install vue
+          npm install vue-cli -g
+
+      - name: Build web-yuedu3 Project
+        uses: actions/checkout@v2
+        run: |
+          npm install
+          npm build
+
+      - name: Upload Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: web-yuedu3
+          path: dist
+          if-no-files-found: error
