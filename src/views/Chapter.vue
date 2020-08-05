@@ -311,6 +311,8 @@ export default {
   methods: {
     getCatalog(bookUrl) {
       return Axios.get(
+        "http://" +
+          localStorage.url +
           "/getChapterList?url=" +
           encodeURIComponent(bookUrl)
       );
@@ -341,7 +343,7 @@ export default {
       jump(this.$refs.top, { duration: 0 });
       let that = this;
       Axios.get(
-        "/getBookContent?url=" +
+        "http://" + localStorage.url + "/getBookContent?url=" +
           encodeURIComponent(bookUrl) + "&index=" + chapterIndex
       ).then(
         res => {
