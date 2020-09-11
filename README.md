@@ -27,8 +27,8 @@ yarn build
 yarn lint
 #格式化代码
 ```
- - 点击`Star`自动编译，可在Actions查看
- - 编译失败，可先点击`Unstar`，再点击`Star`重新开始
+ - ~~~点击`Star`自动编译，可在Actions查看~~~
+ - ~~~编译失败，可先点击`Unstar`，再点击`Star`重新开始~~~
 
 ## 预览
 
