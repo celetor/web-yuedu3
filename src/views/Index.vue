@@ -122,42 +122,40 @@ export default {
         this.readingRecent.chapterIndex = 0;
       }
     }
-    if (this.shelf.length == 0) {
-        this.loading = this.$loading({
-          target: this.$refs.shelfWrapper,
-          lock: true,
-          text: "正在获取书籍信息",
-          spinner: "el-icon-loading",
-          background: "rgb(247,247,247)"
-        });
-        const that = this;
-        Axios.get("/getBookshelf", {
-          timeout: 3000
-        })
-          .then(function(response) {
-            that.loading.close();
-            that.$store.commit("setConnectType", "success");
-            that.$store.commit("increaseBookNum", response.data.data.length);
-            that.$store.commit("addBooks", response.data.data.sort(function (a, b) {
-              var x = a["durChapterTime"] || 0;
-              var y = b["durChapterTime"] || 0;
-              return y - x;
-            }));
-            that.$store.commit(
-              "setConnectStatus",
-              "已连接 "
-            );
-            that.$store.commit("setNewConnect", false);
-          })
-          .catch(function(error) {
-            that.loading.close();
-            that.$store.commit("setConnectType", "danger");
-            that.$store.commit("setConnectStatus", "连接失败");
-            that.$message.error("后端连接失败");
-            that.$store.commit("setNewConnect", false);
-            throw error;
-          });
-    }
+    this.loading = this.$loading({
+      target: this.$refs.shelfWrapper,
+      lock: true,
+      text: "正在获取书籍信息",
+      spinner: "el-icon-loading",
+      background: "rgb(247,247,247)"
+    });
+    const that = this;
+    Axios.get("/getBookshelf", {
+      timeout: 3000
+    })
+      .then(function(response) {
+        that.loading.close();
+        that.$store.commit("setConnectType", "success");
+        that.$store.commit("increaseBookNum", response.data.data.length);
+        that.$store.commit("addBooks", response.data.data.sort(function (a, b) {
+          var x = a["durChapterTime"] || 0;
+          var y = b["durChapterTime"] || 0;
+          return y - x;
+        }));
+        that.$store.commit(
+          "setConnectStatus",
+          "已连接 "
+        );
+        that.$store.commit("setNewConnect", false);
+      })
+      .catch(function(error) {
+        that.loading.close();
+        that.$store.commit("setConnectType", "danger");
+        that.$store.commit("setConnectStatus", "连接失败");
+        that.$message.error("后端连接失败");
+        that.$store.commit("setNewConnect", false);
+        throw error;
+      });
   },
   methods: {
     setIP() {
