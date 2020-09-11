@@ -1,0 +1,27 @@
+name: Master Branch Build
+
+on:
+  watch:
+    types: [started]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout web-yuedu3 Project
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: Build web-yuedu3 Project
+        run: |
+          npm install
+          npm run-script build
+
+      - name: Upload Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist_master
+          path: dist
+          if-no-files-found: error
