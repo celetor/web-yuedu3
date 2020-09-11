@@ -141,7 +141,7 @@ export default {
     let bookName = sessionStorage.getItem("bookName");
     let chapterIndex = sessionStorage.getItem("chapterIndex") || 0;
     var book = JSON.parse(localStorage.getItem(bookUrl));
-    if (book == null) {
+    if (chapterIndex > 0) {
       book = {
         bookName: bookName,
         bookUrl: bookUrl,
