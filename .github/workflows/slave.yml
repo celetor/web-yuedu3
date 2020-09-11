@@ -1,11 +1,13 @@
 name: Slave Branch Build
 
 on:
-  watch:
-    types: [started]
+  push:
+    branches: [ slave ]
+#  watch:
+#    types: [started]
 
 jobs:
-  main:
+  slave:
     runs-on: ubuntu-latest
 
     steps:
