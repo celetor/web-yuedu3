@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="bottom-icons">
-        <a href="https://github.com/zsakvo/web-yuedu" target="_blank">
+        <a href="https://github.com/Celeter/web-yuedu3" target="_blank">
           <div class="bottom-icon">
             <img :src="require('../assets/imgs/github.png')" alt="" />
           </div>
