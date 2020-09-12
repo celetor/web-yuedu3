@@ -2,7 +2,7 @@
   <div class="index-wrapper">
     <div class="navigation-wrapper">
       <div class="navigation-title">
-        阅读
+        阅读·叁
       </div>
       <div class="navigation-sub-title">
         清风不识字，何故乱翻书
