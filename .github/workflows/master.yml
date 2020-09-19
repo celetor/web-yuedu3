@@ -1,11 +1,13 @@
 name: Master Branch Build
 
 on:
-  watch:
-    types: [started]
+  push:
+    branches: [ master ]
+#  watch:
+#    types: [started]
 
 jobs:
-  main:
+  master:
     runs-on: ubuntu-latest
 
     steps:
