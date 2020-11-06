@@ -14,7 +14,7 @@ export default {
       return (
         <div>
           {this.carray.map(a => {
-            return <p style={style}>{a}</p>;
+            return <p style={style} domPropsInnerHTML={a} />;
           })}
         </div>
       );
