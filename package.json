@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "core-js": "^3.3.2",
     "element-ui": "^2.4.5",
     "register-service-worker": "^1.6.2",
@@ -27,7 +27,7 @@
     "@vue/eslint-config-prettier": "^5.0.0",
     "babel-eslint": "^10.0.3",
     "babel-plugin-component": "^1.1.1",
-    "electron": "^7.2.4",
+    "electron": "^9.4.0",
     "eslint": "^5.16.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-vue": "^5.0.0",
