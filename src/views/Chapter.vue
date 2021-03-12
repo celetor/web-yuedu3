@@ -346,15 +346,7 @@ export default {
       ).then(
         res => {
           let data = res.data.data;
-          //let dataArray = data.split("\n\n");
-          //let contentData = "";
-          //if (dataArray.length > 1) {
-          //  contentData = dataArray[1].split("\n");
-          //} else {
-          //  contentData = dataArray[0].split("\n");
-          //}
-          //that.content = contentData;
-          that.content = data.split("\n");
+          that.content = data.split(/\n+/);
           this.$store.commit("setContentLoading", true);
           that.loading.close();
           that.noPoint = false;
