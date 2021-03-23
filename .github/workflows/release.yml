@@ -1,0 +1,49 @@
+name: Merge And Release
+
+on: [workflow_dispatch]
+
+
+jobs:
+  master:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout web-yuedu3 Project
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          path: master
+
+      - name: Build Master
+        working-directory: master
+        run: |
+          npm install
+          npm build
+
+      - name: Set Env
+        shell: bash
+        run: |
+          time="$(date -u -d '+8 hour' '+%Y.%m.%d')"
+          version="v${time}"
+          echo "APP_VER=$version" >> $GITHUB_ENV
+          
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.APP_VER }}
+          release_name: ${{ env.APP_VER }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset Master
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/master/dist/
+          asset_name: master_${{ env.APP_VER }}.zip
+          asset_content_type: application/octet-stream
