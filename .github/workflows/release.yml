@@ -14,6 +14,13 @@ jobs:
           ref: master
           path: master
 
+      - name: Checkout web-yuedu3 Project
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: slave
+          path: slave
+          
       - name: Build Master
         working-directory: master
         run: |
@@ -21,6 +28,17 @@ jobs:
           npm run-script build
           zip -q -r master_dist.zip ./dist
 
+      - name: Build Slave
+        working-directory: slave
+        run: |
+          git config --global user.name  Robot
+          git config --global user.email github-actions@github.com
+          git pull origin master --allow-unrelated-histories
+          git push origin slave
+          npm install
+          npm run-script build
+          zip -q -r slave_dist.zip ./dist
+          
       - name: Set Env
         shell: bash
         run: |
@@ -48,3 +66,16 @@ jobs:
           asset_path: ${{ github.workspace }}/master/master_dist.zip
           asset_name: master_${{ env.APP_VER }}.zip
           asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset Slave
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/slave/slave_dist.zip
+          asset_name: slave_${{ env.APP_VER }}.zip
+          asset_content_type: application/octet-stream
+
+
+
