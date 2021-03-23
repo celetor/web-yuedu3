@@ -18,7 +18,7 @@ jobs:
         working-directory: master
         run: |
           npm install
-          npm build
+          npm run-script build
 
       - name: Set Env
         shell: bash
