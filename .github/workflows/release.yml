@@ -1,6 +1,6 @@
 name: Merge And Release
 
-on: [workflow_dispatch]
+on: [workflow_dispatch, push]
 
 
 jobs:
@@ -38,15 +38,18 @@ jobs:
           npm install
           npm run-script build
           zip -q -r slave_dist.zip ./dist
-          
+
       - name: Set Env
         shell: bash
         run: |
           time="$(date -u -d '+8 hour' '+%Y.%m.%d')"
           version="v${time}"
           echo "APP_VER=$version" >> $GITHUB_ENV
+          tag_name=$(curl -s https://api.github.com/repos/Celeter/build/releases/latest|jq .tag_name -r)
+          echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
           
       - name: Create Release
+        if: ${{ env.TAG_NAME != env.APP_VER }}
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -56,8 +59,9 @@ jobs:
           release_name: ${{ env.APP_VER }}
           draft: false
           prerelease: false
-          
+
       - name: Upload Release Asset Master
+        if: ${{ env.TAG_NAME != env.APP_VER }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,6 +72,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset Slave
+        if: ${{ env.TAG_NAME != env.APP_VER }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,5 +82,20 @@ jobs:
           asset_name: slave_${{ env.APP_VER }}.zip
           asset_content_type: application/octet-stream
 
+      - name: Upload Master
+        if: ${{ env.TAG_NAME == env.APP_VER }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: master_${{ env.APP_VER }}
+          path: ${{ github.workspace }}/master/dist
+          if-no-files-found: error
+
+      - name: Upload Slave
+        if: ${{ env.TAG_NAME == env.APP_VER }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: slave_${{ env.APP_VER }}
+          path: ${{ github.workspace }}/slave/dist
+          if-no-files-found: error
 
 
