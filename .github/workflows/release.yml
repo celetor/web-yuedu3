@@ -19,6 +19,7 @@ jobs:
         run: |
           npm install
           npm run-script build
+          zip -q -r master_dist.zip ./dist
 
       - name: Set Env
         shell: bash
@@ -44,6 +45,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/master/dist/
+          asset_path: ${{ github.workspace }}/master/master_dist.zip
           asset_name: master_${{ env.APP_VER }}.zip
           asset_content_type: application/octet-stream
