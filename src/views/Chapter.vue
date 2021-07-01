@@ -149,6 +149,42 @@ export default {
       };
       localStorage.setItem(bookUrl, JSON.stringify(book));
     }
+
+    // window.addEventListener keyup 声明函数
+
+    this.func_keyup = function (event) {
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.stopPropagation();
+          event.preventDefault();
+          that.toLastChapter();
+          break;
+        case 'ArrowRight':
+          event.stopPropagation();
+          event.preventDefault();
+          that.toNextChapter();
+          break;
+        case 'ArrowUp':
+          event.stopPropagation();
+          event.preventDefault();
+          if (document.documentElement.scrollTop === 0) {
+            that.$message.warning("已到达页面顶部");
+          } else {
+            jump(0 - document.documentElement.clientHeight + 100);
+          }
+          break;
+        case 'ArrowDown':
+          event.stopPropagation();
+          event.preventDefault();
+          if (document.documentElement.clientHeight + document.documentElement.scrollTop === document.documentElement.scrollHeight) {
+            that.$message.warning("已到达页面底部");
+          } else {
+            jump(document.documentElement.clientHeight - 100);
+          }
+          break;
+      }
+    };
+
     this.getCatalog(bookUrl).then(
       res => {
         let catalog = res.data.data;
@@ -156,38 +192,7 @@ export default {
         that.$store.commit("setReadingBook", book);
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
-        window.addEventListener('keyup', function (event) {
-          switch (event.key) {
-            case 'ArrowLeft':
-              event.stopPropagation();
-              event.preventDefault();
-              that.toLastChapter();
-              break;
-            case 'ArrowRight':
-              event.stopPropagation();
-              event.preventDefault();
-              that.toNextChapter();
-              break;
-            case 'ArrowUp':
-              event.stopPropagation();
-              event.preventDefault();
-              if (document.documentElement.scrollTop === 0) {
-                that.$message.warning("已到达页面顶部");
-              } else {
-                jump(0 - document.documentElement.clientHeight + 100);
-              }
-              break;
-            case 'ArrowDown':
-              event.stopPropagation();
-              event.preventDefault();
-              if (document.documentElement.clientHeight + document.documentElement.scrollTop === document.documentElement.scrollHeight) {
-                that.$message.warning("已到达页面底部");
-              } else {
-                jump(document.documentElement.clientHeight - 100);
-              }
-              break;
-          }
-        });
+        window.addEventListener('keyup', this.func_keyup);
       },
       err => {
         that.loading.close();
@@ -195,6 +200,9 @@ export default {
         throw err;
       }
     );
+  },
+  destroyed() {
+    window.removeEventListener('keyup', this.func_keyup);
   },
   watch: {
     chapterName(to) {
