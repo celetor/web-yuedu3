@@ -171,7 +171,7 @@ export default {
           var y = b["durChapterTime"] || 0;
           return y - x;
         }).map((x) => {
-          x.lastCheckTime = new Date(x.lastCheckTime).format("yyyy-MM-dd hh:mm");
+          x.lastCheckTime = new Date(x["lastCheckTime"]).format("yyyy-MM-dd hh:mm");
           return x;
           })
         );
@@ -392,7 +392,7 @@ export default {
               }
             }
 
-            .intro, .dur-chapter, .last-chapter {
+            .intro, .dur-chapter, .last-chapter, .last-CheckTime {
               color: #969ba3;
               font-size: 13px;
               margin-top: 3px;
