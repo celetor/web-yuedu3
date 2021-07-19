@@ -90,7 +90,7 @@
               </div>
               <div class="dur-chapter">已读：{{ book.durChapterTitle }}</div>
               <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
-              <div class="last-CheckTime">更新时间：{{ dateFormat(book.lastCheckTime) }}</div>
+              <div class="last-chapter last-CheckTime">更新时间：{{ dateFormat(book.lastCheckTime) }}</div>
             </div>
           </div>
         </div>
@@ -449,7 +449,7 @@ export default {
               }
             }
 
-            .intro, .dur-chapter, .last-chapter {
+            .intro, .dur-chapter {
               color: #969ba3;
               font-size: 13px;
               margin-top: 3px;
