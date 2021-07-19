@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="bottom-icons">
-        <a href="https://github.com/Celeter/web-yuedu3" target="_blank">
+        <a href="https://github.com/celetor/web-yuedu3" target="_blank">
           <div class="bottom-icon">
             <img :src="require('../assets/imgs/github.png')" alt="" />
           </div>
@@ -90,6 +90,7 @@
               </div>
               <div class="dur-chapter">已读：{{ book.durChapterTitle }}</div>
               <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
+              <div class="last-CheckTime">更新时间：{{ book.lastCheckTime }}</div>
             </div>
           </div>
         </div>
@@ -130,6 +131,34 @@ export default {
       background: "rgb(247,247,247)"
     });
     const that = this;
+    Date.prototype.format = function(fmt) {
+      var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        S: this.getMilliseconds(), //毫秒
+      };
+      if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(
+          RegExp.$1,
+          (this.getFullYear() + "").substr(4 - RegExp.$1.length)
+        );
+      }
+      for (var k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+          fmt = fmt.replace(
+            RegExp.$1,
+            RegExp.$1.length == 1
+              ? o[k]
+              : ("00" + o[k]).substr(("" + o[k]).length)
+          );
+        }
+      }
+      return fmt;
+    };
     Axios.get("/getBookshelf", {
       timeout: 3000
     })
@@ -141,7 +170,11 @@ export default {
           var x = a["durChapterTime"] || 0;
           var y = b["durChapterTime"] || 0;
           return y - x;
-        }));
+        }).map((x) => {
+          x.lastCheckTime = new Date(x.lastCheckTime).format("yyyy-MM-dd hh:mm");
+          return x;
+          })
+        );
         that.$store.commit(
           "setConnectStatus",
           "已连接 "
