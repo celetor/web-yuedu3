@@ -236,7 +236,7 @@ export default {
     },
     dateFormat(t) {
         let time = new Date().getTime();
-        let int = (time - t)/1000;
+        let int = parseInt((time - t)/1000);
         let str = '';
 
         Date.prototype.format = function(fmt) {
@@ -270,13 +270,13 @@ export default {
 
         if (int <= 30){
             str = '刚刚';
-        }elseif (int < 60){
+        }else if (int < 60){
             str = int+'秒前';
-        }elseif (int < 3600){
+        }else if (int < 3600){
             str = parseInt(int/60)+'分钟前';
-        }elseif (int < 86400){
+        }else if (int < 86400){
             str = parseInt(int/3600)+'小时前';
-        }elseif (int < 2592000){
+        }else if (int < 2592000){
             str = parseInt(int/86400)+'天前';
         }else{
             str = new Date(t).format("yyyy-MM-dd hh:mm");
