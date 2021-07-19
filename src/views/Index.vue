@@ -90,7 +90,7 @@
               </div>
               <div class="dur-chapter">已读：{{ book.durChapterTitle }}</div>
               <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
-              <div class="last-CheckTime">更新时间：{{ book.lastCheckTime }}</div>
+              <div class="last-CheckTime">更新时间：{{ dateFormat(book.lastCheckTime) }}</div>
             </div>
           </div>
         </div>
@@ -123,129 +123,46 @@ export default {
         this.readingRecent.chapterIndex = 0;
       }
     }
-    if (this.shelf.length == 0) {
-      if (localStorage.url) {
-        this.loading = this.$loading({
-          target: this.$refs.shelfWrapper,
-          lock: true,
-          text: "正在获取书籍信息",
-          spinner: "el-icon-loading",
-          background: "rgb(247,247,247)"
-        });
-        const that = this;
-        Date.prototype.format = function(fmt) {
-          var o = {
-            "M+": this.getMonth() + 1, //月份
-            "d+": this.getDate(), //日
-            "h+": this.getHours(), //小时
-            "m+": this.getMinutes(), //分
-            "s+": this.getSeconds(), //秒
-            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-            S: this.getMilliseconds(), //毫秒
-          };
-          if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(
-              RegExp.$1,
-              (this.getFullYear() + "").substr(4 - RegExp.$1.length)
-            );
-          }
-          for (var k in o) {
-            if (new RegExp("(" + k + ")").test(fmt)) {
-              fmt = fmt.replace(
-                RegExp.$1,
-                RegExp.$1.length == 1
-                  ? o[k]
-                  : ("00" + o[k]).substr(("" + o[k]).length)
-              );
-            }
-          }
-          return fmt;
-        };
-        Axios.get("http://" + localStorage.url + "/getBookshelf", {
-          timeout: 3000
-        })
-          .then(function(response) {
-            that.loading.close();
-            that.$store.commit("setConnectType", "success");
-            that.$store.commit("increaseBookNum", response.data.data.length);
-            that.$store.commit("addBooks", response.data.data.sort(function (a, b) {
-              var x = a["durChapterTime"] || 0;
-              var y = b["durChapterTime"] || 0;
-              return y - x;
-            }));
-            that.$store.commit(
-              "setConnectStatus",
-              "已连接 " + localStorage.url
-            );
-            that.$store.commit("setNewConnect", false);
+    this.loading = this.$loading({
+      target: this.$refs.shelfWrapper,
+      lock: true,
+      text: "正在获取书籍信息",
+      spinner: "el-icon-loading",
+      background: "rgb(247,247,247)"
+    });
+    const that = this;
+    Axios.get("/getBookshelf", {
+      timeout: 3000
+    })
+      .then(function(response) {
+        that.loading.close();
+        that.$store.commit("setConnectType", "success");
+        that.$store.commit("increaseBookNum", response.data.data.length);
+        that.$store.commit(
+          "addBooks",
+          response.data.data.sort(function(a, b) {
+            var x = a["durChapterTime"] || 0;
+            var y = b["durChapterTime"] || 0;
+            return y - x;
           })
-          .catch(function(error) {
-            that.loading.close();
-            that.$store.commit("setConnectType", "danger");
-            that.$store.commit("setConnectStatus", "点击设置后端 url 与 端口");
-            that.$message.error("后端连接失败");
-            that.$store.commit("setNewConnect", false);
-            throw error;
-          });
-      } else {
-        this.$message.error("请先设置后端 url 与端口");
-        this.$store.commit("setConnectStatus", "点击设置后端 url 与 端口");
-        this.$store.commit("setNewConnect", false);
-        this.$store.commit("setConnectType", "danger");
-      }
-    }
+        );
+        that.$store.commit(
+          "setConnectStatus",
+          "已连接 "
+        );
+        that.$store.commit("setNewConnect", false);
+      })
+      .catch(function(error) {
+        that.loading.close();
+        that.$store.commit("setConnectType", "danger");
+        that.$store.commit("setConnectStatus", "连接失败");
+        that.$message.error("后端连接失败");
+        that.$store.commit("setNewConnect", false);
+        throw error;
+      });
   },
   methods: {
     setIP() {
-      const that = this;
-      this.$prompt("请输入 IP 和端口 ( 如：127.0.0.1:9527 )", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputPattern: /^((2[0-4]\d|25[0-5]|[1]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[1]?\d\d?):([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-6][0-5][0-5][0-3][0-5])$/,
-        inputErrorMessage: "url 形式不正确",
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            that.$store.commit("setNewConnect", true);
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "校验中……";
-            Axios.get("http://" + instance.inputValue + "/getBookshelf", {
-              timeout: 3000
-            })
-              .then(function(response) {
-                instance.confirmButtonLoading = false;
-                that.$store.commit(
-                  "increaseBookNum",
-                  response.data.data.length
-                );
-                that.$store.commit("addBooks", response.data.data);
-                that.$store.commit("setConnectType", "success");
-                that.$store.commit(
-                  "setConnectStatus",
-                  "已连接 " + localStorage.url
-                );
-                that.$store.commit("setNewConnect", false);
-                done();
-              })
-              .catch(function(error) {
-                instance.confirmButtonLoading = false;
-                instance.confirmButtonText = "确定";
-                that.$message.error("访问失败，请检查您输入的 url");
-                that.$store.commit("setNewConnect", false);
-                throw error;
-              });
-          } else {
-            done();
-          }
-        }
-      })
-        .then(({ value }) => {
-          localStorage.url = value;
-          this.$message({
-            type: "success",
-            message: "与" + value + "连接成功"
-          });
-        })
-        .catch(() => {});
     },
     toDetail(bookUrl, bookName, chapterIndex) {
       sessionStorage.setItem("bookUrl", bookUrl);
@@ -260,6 +177,37 @@ export default {
       this.$router.push({
         path: "/chapter"
       });
+    },
+    dateFormat(t) {
+      Date.prototype.format = function(fmt) {
+        var o = {
+          "M+": this.getMonth() + 1, //月份
+          "d+": this.getDate(), //日
+          "h+": this.getHours(), //小时
+          "m+": this.getMinutes(), //分
+          "s+": this.getSeconds(), //秒
+          "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+          S: this.getMilliseconds(), //毫秒
+        };
+        if (/(y+)/.test(fmt)) {
+          fmt = fmt.replace(
+            RegExp.$1,
+            (this.getFullYear() + "").substr(4 - RegExp.$1.length)
+          );
+        }
+        for (var k in o) {
+          if (new RegExp("(" + k + ")").test(fmt)) {
+            fmt = fmt.replace(
+              RegExp.$1,
+              RegExp.$1.length == 1
+                ? o[k]
+                : ("00" + o[k]).substr(("" + o[k]).length)
+            );
+          }
+        }
+        return fmt;
+      };
+      return new Date(t).format("yyyy-MM-dd hh:mm");
     }
   },
   computed: {
@@ -446,7 +394,7 @@ export default {
               }
             }
 
-            .intro, .dur-chapter, .last-chapter {
+            .intro, .dur-chapter, .last-chapter, .last-CheckTime {
               color: #969ba3;
               font-size: 13px;
               margin-top: 3px;
