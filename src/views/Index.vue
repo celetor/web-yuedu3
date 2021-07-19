@@ -88,10 +88,10 @@
                 <div class="dot">•</div>
                 <div class="size">共{{ book.totalChapterNum }}章</div>
                 <div class="dot">•</div>
-                <div class="date">{{dateFormat(book.lastCheckTime)}}</div>
+                <div class="date">{{ dateFormat(book.lastCheckTime) }}</div>
               </div>
               <div class="dur-chapter">已读：{{ book.durChapterTitle }}</div>
-              <div class="last-chapter">最新：{{ book.latestChapterTitle }}•</div>
+              <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
             </div>
           </div>
         </div>
@@ -235,53 +235,53 @@ export default {
       });
     },
     dateFormat(t) {
-        let time = new Date().getTime();
-        let int = parseInt((time - t)/1000);
-        let str = '';
+      let time = new Date().getTime();
+      let int = parseInt((time - t) / 1000);
+      let str = "";
 
-        Date.prototype.format = function(fmt) {
-            var o = {
-              "M+": this.getMonth() + 1, //月份
-              "d+": this.getDate(), //日
-              "h+": this.getHours(), //小时
-              "m+": this.getMinutes(), //分
-              "s+": this.getSeconds(), //秒
-              "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-              S: this.getMilliseconds(), //毫秒
-            };
-            if (/(y+)/.test(fmt)) {
-              fmt = fmt.replace(
-                RegExp.$1,
-                (this.getFullYear() + "").substr(4 - RegExp.$1.length)
-              );
-            }
-            for (var k in o) {
-              if (new RegExp("(" + k + ")").test(fmt)) {
-                fmt = fmt.replace(
-                  RegExp.$1,
-                  RegExp.$1.length == 1
-                    ? o[k]
-                    : ("00" + o[k]).substr(("" + o[k]).length)
-                );
-              }
-            }
-            return fmt;
+      Date.prototype.format = function(fmt) {
+        var o = {
+          "M+": this.getMonth() + 1, //月份
+          "d+": this.getDate(), //日
+          "h+": this.getHours(), //小时
+          "m+": this.getMinutes(), //分
+          "s+": this.getSeconds(), //秒
+          "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+          S: this.getMilliseconds(), //毫秒
         };
-
-        if (int <= 30){
-            str = '刚刚';
-        }else if (int < 60){
-            str = int+'秒前';
-        }else if (int < 3600){
-            str = parseInt(int/60)+'分钟前';
-        }else if (int < 86400){
-            str = parseInt(int/3600)+'小时前';
-        }else if (int < 2592000){
-            str = parseInt(int/86400)+'天前';
-        }else{
-            str = new Date(t).format("yyyy-MM-dd hh:mm");
+        if (/(y+)/.test(fmt)) {
+          fmt = fmt.replace(
+            RegExp.$1,
+            (this.getFullYear() + "").substr(4 - RegExp.$1.length)
+          );
         }
-        return str;
+        for (var k in o) {
+          if (new RegExp("(" + k + ")").test(fmt)) {
+            fmt = fmt.replace(
+              RegExp.$1,
+              RegExp.$1.length == 1
+                ? o[k]
+                : ("00" + o[k]).substr(("" + o[k]).length)
+            );
+          }
+        }
+        return fmt;
+      };
+
+      if (int <= 30) {
+        str = "刚刚";
+      } else if (int < 60) {
+        str = int + "秒前";
+      } else if (int < 3600) {
+        str = parseInt(int / 60) + "分钟前";
+      } else if (int < 86400) {
+        str = parseInt(int / 3600) + "小时前";
+      } else if (int < 2592000) {
+        str = parseInt(int / 86400) + "天前";
+      } else {
+        str = new Date(t).format("yyyy-MM-dd hh:mm");
+      }
+      return str;
     }
   },
   computed: {
@@ -468,7 +468,7 @@ export default {
               }
             }
 
-            .intro, .dur-chapter {
+            .intro, .dur-chapter, .last-chapter {
               color: #969ba3;
               font-size: 13px;
               margin-top: 3px;
