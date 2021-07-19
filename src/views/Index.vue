@@ -87,10 +87,11 @@
                 </div>
                 <div class="dot">•</div>
                 <div class="size">共{{ book.totalChapterNum }}章</div>
+                <div class="dot">•</div>
+                <div class="date">{{ dateFormat(book.lastCheckTime) }}</div>
               </div>
               <div class="dur-chapter">已读：{{ book.durChapterTitle }}</div>
               <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
-              <div class="last-CheckTime">更新时间：{{ dateFormat(book.lastCheckTime) }}</div>
             </div>
           </div>
         </div>
@@ -138,14 +139,11 @@ export default {
         that.loading.close();
         that.$store.commit("setConnectType", "success");
         that.$store.commit("increaseBookNum", response.data.data.length);
-        that.$store.commit(
-          "addBooks",
-          response.data.data.sort(function(a, b) {
-            var x = a["durChapterTime"] || 0;
-            var y = b["durChapterTime"] || 0;
-            return y - x;
-          })
-        );
+        that.$store.commit("addBooks", response.data.data.sort(function (a, b) {
+          var x = a["durChapterTime"] || 0;
+          var y = b["durChapterTime"] || 0;
+          return y - x;
+        }));
         that.$store.commit(
           "setConnectStatus",
           "已连接 "
@@ -179,6 +177,9 @@ export default {
       });
     },
     dateFormat(t) {
+      let time = new Date().getTime();
+      let int = parseInt((time - t) / 1000);
+      let str = "";
       Date.prototype.format = function(fmt) {
         var o = {
           "M+": this.getMonth() + 1, //月份
@@ -207,7 +208,20 @@ export default {
         }
         return fmt;
       };
-      return new Date(t).format("yyyy-MM-dd hh:mm");
+      if (int <= 30) {
+        str = "刚刚";
+      } else if (int < 60) {
+        str = int + "秒前";
+      } else if (int < 3600) {
+        str = parseInt(int / 60) + "分钟前";
+      } else if (int < 86400) {
+        str = parseInt(int / 3600) + "小时前";
+      } else if (int < 2592000) {
+        str = parseInt(int / 86400) + "天前";
+      } else {
+        str = new Date(t).format("yyyy-MM-dd hh:mm");
+      }
+      return str;
     }
   },
   computed: {
@@ -394,7 +408,7 @@ export default {
               }
             }
 
-            .intro, .dur-chapter, .last-chapter, .last-CheckTime {
+            .intro, .dur-chapter, .last-chapter {
               color: #969ba3;
               font-size: 13px;
               margin-top: 3px;
