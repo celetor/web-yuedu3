@@ -67,7 +67,7 @@
             <div class="cover-img">
               <img
                 class="cover"
-                :src="'../cover?path=' + book.coverUrl"
+                :src="getCover(book.coverUrl)"
                 alt=""
               />
             </div>
@@ -279,6 +279,9 @@ export default {
         str = new Date(t).format("yyyy-MM-dd hh:mm");
       }
       return str;
+    },
+    getCover(coverUrl){
+      return 'http://' + localStorage.url + '/cover?path=' + coverUrl
     }
   },
   computed: {
