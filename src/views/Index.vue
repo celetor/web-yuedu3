@@ -67,10 +67,7 @@
             <div class="cover-img">
               <img
                 class="cover"
-                :src="
-                    book.coverUrl ||
-                    require('../assets/imgs/noCover.jpeg')
-                "
+                :src="../cover?path=' + book.coverUrl"
                 alt=""
               />
             </div>
