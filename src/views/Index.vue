@@ -67,7 +67,7 @@
             <div class="cover-img">
               <img
                 class="cover"
-                :src="../cover?path=' + book.coverUrl"
+                :src="'../cover?path=' + book.coverUrl"
                 alt=""
               />
             </div>
