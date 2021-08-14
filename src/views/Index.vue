@@ -168,10 +168,10 @@ export default {
   methods: {
     setIP() {
       const that = this;
-      this.$prompt("请输入 IP 和端口 ( 如：127.0.0.1:9527 )", "提示", {
+      this.$prompt("请输入 IP 和端口 ( 如：127.0.0.1:9527 或者通过内网穿透的地址)", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        inputPattern: /^((2[0-4]\d|25[0-5]|[1]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[1]?\d\d?):([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-6][0-5][0-5][0-3][0-5])$/,
+        inputPattern: /^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?:([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-6][0-5][0-5][0-3][0-5])$/,
         inputErrorMessage: "url 形式不正确",
         beforeClose: (action, instance, done) => {
           if (action === "confirm") {
