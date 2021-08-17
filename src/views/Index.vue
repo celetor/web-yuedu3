@@ -276,7 +276,7 @@ export default {
       } else if (int < 2592000) {
         str = parseInt(int / 86400) + "天前";
       } else {
-        str = new Date(t).format("yyyy-MM-dd hh:mm");
+        str = new Date(t).format("yyyy-MM-dd");
       }
       return str;
     },
