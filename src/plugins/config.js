@@ -64,6 +64,9 @@ var settings = {
     },
     {
       fontFamily: "Kaiti"
+    },
+    {
+      fontFamily: "Hiragino Sans GB W3"
     }
   ]
 };

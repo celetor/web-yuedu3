@@ -50,5 +50,7 @@ p {
   display: block;
   word-wrap: break-word;
   word-break: break-all;
+  line-height: 1.3em;
+  margin: 0.6em 0em 0.6em 0em;
 }
 </style>

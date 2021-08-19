@@ -99,7 +99,7 @@ export default {
         display: "inline",
         color: "rgba(255,255,255,0.2)"
       },
-      fonts: ["雅黑", "宋体", "楷书"]
+      fonts: ["雅黑", "宋体", "楷书", "冬青黑"]
     };
   },
   mounted() {
@@ -156,12 +156,12 @@ export default {
     },
     moreFontSize() {
       let config = this.config;
-      if (config.fontSize < 48) config.fontSize += 2;
+      if (config.fontSize < 48) config.fontSize += 1;
       this.$store.commit("setConfig", config);
     },
     lessFontSize() {
       let config = this.config;
-      if (config.fontSize > 12) config.fontSize -= 2;
+      if (config.fontSize > 12) config.fontSize -= 1;
       this.$store.commit("setConfig", config);
     },
     moreReadWidth() {

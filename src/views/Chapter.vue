@@ -523,8 +523,8 @@ export default {
       font-family: 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', sans-serif;
 
       .title {
-        margin-bottom: 57px;
-        font: 24px / 32px PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', 'Microsoft YaHei', sans-serif;
+        margin-bottom: 0px;
+        font: 0px / 0px PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', 'Microsoft YaHei', sans-serif;
       }
 
       .bottom-bar, .top-bar {
@@ -551,7 +551,7 @@ export default {
 
   >>>.chapter {
     border: 1px solid #d8d8d8;
-    color: #262626;
+    color: #000;
   }
 }
 
