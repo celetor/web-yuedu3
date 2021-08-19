@@ -15,13 +15,7 @@
           class="note"
           v-for="note in this.$store.state.catalog"
           :key="note.index"
-          @click="
-            toChapter(
-              note.url,
-              note.title,
-              note.index
-            )
-          "
+          @click="toChapter(note.url, note.title, note.index)"
         >
           {{ note.title }}
         </div>

@@ -25,7 +25,13 @@
           <el-tag
             type="warning"
             class="recent-book"
-            @click="toDetail(readingRecent.url, readingRecent.name, readingRecent.chapterIndex)"
+            @click="
+              toDetail(
+                readingRecent.url,
+                readingRecent.name,
+                readingRecent.chapterIndex
+              )
+            "
             :class="{ 'no-point': readingRecent.url == '' }"
           >
             {{ readingRecent.name }}
@@ -65,17 +71,11 @@
             @click="toDetail(book.bookUrl, book.name, book.durChapterIndex)"
           >
             <div class="cover-img">
-              <img
-                class="cover"
-                :src="getCover(book.coverUrl)"
-                alt=""
-              />
+              <img class="cover" :src="getCover(book.coverUrl)" alt="" />
             </div>
             <div
               class="info"
-              @click="
-                toDetail(book.bookUrl, book.name, book.durChapterIndex)
-              "
+              @click="toDetail(book.bookUrl, book.name, book.durChapterIndex)"
             >
               <div class="name">{{ book.name }}</div>
               <div class="sub">
@@ -88,7 +88,9 @@
                 <div class="date">{{ dateFormat(book.lastCheckTime) }}</div>
               </div>
               <div class="dur-chapter">已读：{{ book.durChapterTitle }}</div>
-              <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
+              <div class="last-chapter">
+                最新：{{ book.latestChapterTitle }}
+              </div>
             </div>
           </div>
         </div>
@@ -138,11 +140,14 @@ export default {
             that.loading.close();
             that.$store.commit("setConnectType", "success");
             that.$store.commit("increaseBookNum", response.data.data.length);
-            that.$store.commit("addBooks", response.data.data.sort(function (a, b) {
-              var x = a["durChapterTime"] || 0;
-              var y = b["durChapterTime"] || 0;
-              return y - x;
-            }));
+            that.$store.commit(
+              "addBooks",
+              response.data.data.sort(function(a, b) {
+                var x = a["durChapterTime"] || 0;
+                var y = b["durChapterTime"] || 0;
+                return y - x;
+              })
+            );
             that.$store.commit(
               "setConnectStatus",
               "已连接 " + localStorage.url
@@ -168,46 +173,50 @@ export default {
   methods: {
     setIP() {
       const that = this;
-      this.$prompt("请输入 IP 和端口 ( 如：127.0.0.1:9527 或者通过内网穿透的地址)", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputPattern: /^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?:([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-6][0-5][0-5][0-3][0-5])$/,
-        inputErrorMessage: "url 形式不正确",
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            that.$store.commit("setNewConnect", true);
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "校验中……";
-            Axios.get("http://" + instance.inputValue + "/getBookshelf", {
-              timeout: 3000
-            })
-              .then(function(response) {
-                instance.confirmButtonLoading = false;
-                that.$store.commit(
-                  "increaseBookNum",
-                  response.data.data.length
-                );
-                that.$store.commit("addBooks", response.data.data);
-                that.$store.commit("setConnectType", "success");
-                that.$store.commit(
-                  "setConnectStatus",
-                  "已连接 " + localStorage.url
-                );
-                that.$store.commit("setNewConnect", false);
-                done();
+      this.$prompt(
+        "请输入 IP 和端口 ( 如：127.0.0.1:9527 或者通过内网穿透的地址)",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          inputPattern: /^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?:([1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-6][0-5][0-5][0-3][0-5])$/,
+          inputErrorMessage: "url 形式不正确",
+          beforeClose: (action, instance, done) => {
+            if (action === "confirm") {
+              that.$store.commit("setNewConnect", true);
+              instance.confirmButtonLoading = true;
+              instance.confirmButtonText = "校验中……";
+              Axios.get("http://" + instance.inputValue + "/getBookshelf", {
+                timeout: 3000
               })
-              .catch(function(error) {
-                instance.confirmButtonLoading = false;
-                instance.confirmButtonText = "确定";
-                that.$message.error("访问失败，请检查您输入的 url");
-                that.$store.commit("setNewConnect", false);
-                throw error;
-              });
-          } else {
-            done();
+                .then(function(response) {
+                  instance.confirmButtonLoading = false;
+                  that.$store.commit(
+                    "increaseBookNum",
+                    response.data.data.length
+                  );
+                  that.$store.commit("addBooks", response.data.data);
+                  that.$store.commit("setConnectType", "success");
+                  that.$store.commit(
+                    "setConnectStatus",
+                    "已连接 " + localStorage.url
+                  );
+                  that.$store.commit("setNewConnect", false);
+                  done();
+                })
+                .catch(function(error) {
+                  instance.confirmButtonLoading = false;
+                  instance.confirmButtonText = "确定";
+                  that.$message.error("访问失败，请检查您输入的 url");
+                  that.$store.commit("setNewConnect", false);
+                  throw error;
+                });
+            } else {
+              done();
+            }
           }
         }
-      })
+      )
         .then(({ value }) => {
           localStorage.url = value;
           this.$message({
@@ -244,7 +253,7 @@ export default {
           "m+": this.getMinutes(), //分
           "s+": this.getSeconds(), //秒
           "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-          S: this.getMilliseconds(), //毫秒
+          S: this.getMilliseconds() //毫秒
         };
         if (/(y+)/.test(fmt)) {
           fmt = fmt.replace(
@@ -280,8 +289,8 @@ export default {
       }
       return str;
     },
-    getCover(coverUrl){
-      return 'http://' + localStorage.url + '/cover?path=' + coverUrl
+    getCover(coverUrl) {
+      return "http://" + localStorage.url + "/cover?path=" + coverUrl;
     }
   },
   computed: {
