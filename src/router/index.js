@@ -14,7 +14,12 @@ const routes = [
     path: "/",
     name: "index",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Index.vue")
+      import(/* webpackChunkName: "about" */ "../views/Index.vue"),
+
+    beforeEnter: (to, from, next) => {
+      document.title = "书架";
+      next();
+    }
   },
   {
     path: "/about",

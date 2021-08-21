@@ -329,6 +329,9 @@ export default {
       let chapterName = this.$store.state.readingBook.catalog[index].title;
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
       this.title = chapterName;
+      //增加标题-书籍名&章节名
+      let bookName = this.$store.state.readingBook.bookName;
+      document.title = bookName + "-" + chapterName;
       //强制滚回顶层
       jump(this.$refs.top, { duration: 0 });
       let that = this;
