@@ -382,7 +382,11 @@ export default {
       let index = this.$store.state.readingBook.index;
       index++;
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
-        this.$message.info("下一章");
+        //this.$message.info("下一章");
+        this.$message({
+          duration: 700,
+          message: "下一章"
+        });
         this.getContent(index);
       } else {
         this.$message.error("本章是最后一章");
@@ -393,7 +397,11 @@ export default {
       let index = this.$store.state.readingBook.index;
       index--;
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
-        this.$message.info("上一章");
+        //this.$message.info("上一章");
+        this.$message({
+          duration: 700,
+          message: "上一章"
+        });
         this.getContent(index);
       } else {
         this.$message.error("本章是第一章");
