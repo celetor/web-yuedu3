@@ -97,8 +97,14 @@
     <div class="chapter-bar"></div>
     <div class="chapter" ref="content" :style="chapterTheme">
       <div class="content">
+        <div class="title" ref="title" :style="chapterTheme" v-if="show">
+          <p>
+            {{
+              this.$store.state.readingBook.bookName + "&nbsp;-&nbsp;" + title
+            }}
+          </p>
+        </div>
         <div class="top-bar" ref="top"></div>
-        <div class="title" ref="title" v-if="show">{{ title }}</div>
         <Pcontent :carray="content" />
         <div class="bottom-bar" ref="bottom"></div>
       </div>
@@ -511,7 +517,6 @@ export default {
       font-weight: 500;
       color: #B5B5B5;
     }
-
     .content {
       font-size: 18px;
       line-height: 1.8;
@@ -519,11 +524,17 @@ export default {
       font-family: 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', sans-serif;
 
       .title {
-        font: bold 26px/2em 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', sans-serif;
+        position: fixed;
+        top: 0;
+        margin: -0.2vh 0 0 0;
+        font: 2vh / 0px PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', 'Microsoft YaHei', sans-serif;
       }
 
-      .bottom-bar, .top-bar {
-        height: 64px;
+      .bottom-bar{
+        height: 60px;
+      }
+      .top-bar {
+        height: 20px;
       }
     }
   }
