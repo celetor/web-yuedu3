@@ -172,8 +172,10 @@ export default {
         let catalog = res.data.data;
         book.catalog = catalog;
         that.$store.commit("setReadingBook", book);
+        //下面两行好像没起作用
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
+        //console.log(index)
         window.addEventListener("keyup", this.func_keyup);
       },
       err => {
@@ -344,8 +346,13 @@ export default {
           chapterIndex
       ).then(
         res => {
+          //data.data里面就是正文
           let data = res.data.data;
           that.content = data.split(/\n+/);
+          //去除多余标题
+          if (chapterName === that.content[0]) {
+            that.content.shift();
+          }
           this.$store.commit("setContentLoading", true);
           that.loading.close();
           that.noPoint = false;
@@ -512,8 +519,7 @@ export default {
       font-family: 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', sans-serif;
 
       .title {
-        margin-bottom: 0px;
-        font: 0px / 0px PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', 'Microsoft YaHei', sans-serif;
+        font: bold 26px/2em 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', sans-serif;
       }
 
       .bottom-bar, .top-bar {
