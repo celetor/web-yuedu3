@@ -8,9 +8,13 @@ export default {
   },
   props: ["carray"],
   render() {
-    const { fontFamily, fontSize } = this;
-    let style = fontFamily;
-    style.fontSize = fontSize;
+    const { fontFamily, fontSize, readLine, readPara } = this;
+    let style = {
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      "line-height": readLine,
+      margin: readPara
+    };
     if (this.show) {
       return (
         <div>
@@ -28,14 +32,34 @@ export default {
       return this.$store.state.showContent;
     },
     fontFamily() {
-      return config.fonts[this.$store.state.config.font];
+      return config.fonts[this.$store.state.config.font]["fontFamily"];
     },
     fontSize() {
       return this.$store.state.config.fontSize + "px";
+    },
+    readLine() {
+      return this.$store.state.config.readLine + "em";
+    },
+    readPara() {
+      return this.$store.state.config.readPara + "em auto";
     }
   },
   watch: {
     fontSize() {
+      let that = this;
+      that.$store.commit("setShowContent", false);
+      this.$nextTick(() => {
+        that.$store.commit("setShowContent", true);
+      });
+    },
+    readLine() {
+      let that = this;
+      that.$store.commit("setShowContent", false);
+      this.$nextTick(() => {
+        that.$store.commit("setShowContent", true);
+      });
+    },
+    readPara() {
       let that = this;
       that.$store.commit("setShowContent", false);
       this.$nextTick(() => {
@@ -51,7 +75,5 @@ p {
   display: block;
   word-wrap: break-word;
   word-break: break-all;
-  line-height: 1.3em;
-  margin: 0.6em 0em;
 }
 </style>

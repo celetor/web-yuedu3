@@ -18,7 +18,9 @@ export default new Vuex.Store({
       theme: 0,
       font: 0,
       fontSize: 18,
-      readWidth: 800
+      readWidth: 800,
+      readLine: 1.3,
+      readPara: 0.6
     },
     readSettingsVisible: false
   },

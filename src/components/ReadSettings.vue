@@ -56,6 +56,30 @@
             >
           </div>
         </li>
+        <li class="read-width">
+          <i>行间距</i>
+          <div class="resize">
+            <span class="less" @click="lessReadLine"
+              ><em class="iconfont">&#58965;</em></span
+            ><b></b> <span class="lang">{{ readLine }}</span
+            ><b></b>
+            <span class="more" @click="moreReadLine"
+              ><em class="iconfont">&#58975;</em></span
+            >
+          </div>
+        </li>
+        <li class="read-width">
+          <i>段落间距</i>
+          <div class="resize">
+            <span class="less" @click="lessReadPara"
+              ><em class="iconfont">&#58965;</em></span
+            ><b></b> <span class="lang">{{ readPara }}</span
+            ><b></b>
+            <span class="more" @click="moreReadPara"
+              ><em class="iconfont">&#58975;</em></span
+            >
+          </div>
+        </li>
       </ul>
     </div>
   </div>
@@ -132,6 +156,12 @@ export default {
     },
     readWidth() {
       return this.$store.state.config.readWidth;
+    },
+    readLine() {
+      return this.$store.state.config.readLine;
+    },
+    readPara() {
+      return this.$store.state.config.readPara;
     }
   },
   methods: {
@@ -166,12 +196,41 @@ export default {
     },
     moreReadWidth() {
       let config = this.config;
-      if (config.readWidth < 960) config.readWidth += 160;
+      if (config.readWidth < 1280) config.readWidth += 160;
       this.$store.commit("setConfig", config);
     },
     lessReadWidth() {
       let config = this.config;
-      if (config.readWidth > 640) config.readWidth -= 160;
+      if (config.readWidth > 480) config.readWidth -= 160;
+      this.$store.commit("setConfig", config);
+    },
+    // 先乘后除, 解决浮点运算精度问题
+    moreReadLine() {
+      let config = this.config;
+      if (config.readLine < 2) {
+        config.readLine = (config.readLine * 10000 + 0.1 * 10000) / 10000;
+      }
+      this.$store.commit("setConfig", config);
+    },
+    lessReadLine() {
+      let config = this.config;
+      if (config.readLine > 1) {
+        config.readLine = (config.readLine * 10000 - 0.1 * 10000) / 10000;
+      }
+      this.$store.commit("setConfig", config);
+    },
+    moreReadPara() {
+      let config = this.config;
+      if (config.readPara < 2) {
+        config.readPara = (config.readPara * 10000 + 0.1 * 10000) / 10000;
+      }
+      this.$store.commit("setConfig", config);
+    },
+    lessReadPara() {
+      let config = this.config;
+      if (config.readPara > 0.5) {
+        config.readPara = (config.readPara * 10000 - 0.1 * 10000) / 10000;
+      }
       this.$store.commit("setConfig", config);
     }
   }
@@ -193,7 +252,7 @@ export default {
   user-select: none;
   margin: -13px;
   width: 478px;
-  height: 300px;
+  height: 400px;
   text-align: left;
   padding: 40px 0 40px 24px;
   background: #ede7da url('../assets/imgs/themes/popup_1.png') repeat;
