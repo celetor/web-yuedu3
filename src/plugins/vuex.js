@@ -10,6 +10,7 @@ export default new Vuex.Store({
     newConnect: true,
     shelf: [],
     catalog: "",
+    length: 0,
     readingBook: {},
     popCataVisible: false,
     contentLoading: true,
