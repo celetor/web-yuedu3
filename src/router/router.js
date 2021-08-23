@@ -14,7 +14,7 @@ const routes = [
     path: "/",
     name: "index",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Index.vue"),
+      import(/* webpackChunkName: "index" */ "../views/Index.vue"),
 
     beforeEnter: (to, from, next) => {
       document.title = "书架";
@@ -40,7 +40,7 @@ const routes = [
     path: "/chapter",
     name: "Chapter",
     component: () =>
-      import(/* webpackChunkName: "detail" */ "../views/Chapter.vue")
+      import(/* webpackChunkName: "chapter" */ "../views/Chapter.vue")
   }
 ];
 
