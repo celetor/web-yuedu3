@@ -10,7 +10,7 @@ export default new Vuex.Store({
     newConnect: true,
     shelf: [],
     catalog: "",
-    length: 0,
+    //length: 0,
     readingBook: {},
     popCataVisible: false,
     contentLoading: true,
@@ -38,6 +38,7 @@ export default new Vuex.Store({
     addBooks(state, books) {
       state.shelf = books;
     },
+    //increaseBookNum(state, bookNum) {state.length = bookNum;},
     setCatalog(state, catalog) {
       state.catalog = catalog;
     },
