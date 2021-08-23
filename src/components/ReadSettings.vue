@@ -4,7 +4,12 @@
     :style="popupTheme"
     :class="{ night: isNight, day: !isNight }"
   >
-    <div class="settings-title">设置</div>
+    <div class="settings-title">
+      <p>
+        设置
+        <button @click="preset">初始化</button>
+      </p>
+    </div>
     <div class="setting-list">
       <ul>
         <li class="theme-list">
@@ -165,6 +170,11 @@ export default {
     }
   },
   methods: {
+    //store里增加了新的config, 需要先清除localStorage里的config后再读取
+    preset() {
+      localStorage.removeItem("config");
+      location.reload();
+    },
     setTheme(theme) {
       if (theme == 6) {
         this.isNight = true;
