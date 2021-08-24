@@ -8,6 +8,7 @@
         清风不识字，何故乱翻书
       </div>
       <div class="search-wrapper">
+        <!--
         <el-input
           size="mini"
           placeholder="搜索书籍"
@@ -16,6 +17,7 @@
         >
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
+        -->
       </div>
       <div class="recent-wrapper">
         <div class="recent-title">
