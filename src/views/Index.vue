@@ -54,7 +54,7 @@
         </div>
       </div>
       <div class="bottom-icons">
-        <a href="https://github.com/celetor/web-yuedu3" target="_blank">
+        <a href="https://github.com/gedoor/legado_web_bookshelf" target="_blank">
           <div class="bottom-icon">
             <img :src="require('../assets/imgs/github.png')" alt="" />
           </div>
