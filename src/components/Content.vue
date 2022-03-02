@@ -14,7 +14,7 @@ export default {
       return (
         <div>
           {this.carray.map(a => {
-            return <p style={style} domPropsInnerHTML={a} />;
+            return <p style={style} domPropsInnerHTML={this.proxyImage(a)} />;
           })}
         </div>
       );
@@ -31,6 +31,20 @@ export default {
     },
     fontSize() {
       return this.$store.state.config.fontSize + "px";
+    }
+  },
+  methods: {
+    proxyImage(content) {
+      let imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/;
+      if (!imgPattern.test(content)) {
+        return content;
+      }
+      let src = content.match(imgPattern)[1];
+      if (/^data:/.test(src)) {
+        return content;
+      }
+      return '<img src="' + "../../image?path=" + encodeURI(src) + "&url=" + sessionStorage.getItem("bookUrl")
+ + '">';
     }
   },
   watch: {
