@@ -43,7 +43,7 @@ export default {
       if (/^data:/.test(src)) {
         return content;
       }
-      return '<img src="' + "../../image?path=" + encodeURI(src) + "&url=" + sessionStorage.getItem("bookUrl")
+      return '<img src="' + "../../image?path=" + encodeURI(src) + "&url=" + encodeURI(sessionStorage.getItem("bookUrl"))
  + '">';
     }
   },
