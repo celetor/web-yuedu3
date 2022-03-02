@@ -141,15 +141,19 @@ export default {
       .then(function(response) {
         that.loading.close();
         that.$store.commit("setConnectType", "success");
-        that.$store.commit("increaseBookNum", response.data.data.length);
-        that.$store.commit(
-          "addBooks",
-          response.data.data.sort(function(a, b) {
-            var x = a["durChapterTime"] || 0;
-            var y = b["durChapterTime"] || 0;
-            return y - x;
-          })
-        );
+        if (response.data.isSuccess) {
+          that.$store.commit("increaseBookNum", response.data.data.length);
+          that.$store.commit(
+            "addBooks",
+            response.data.data.sort(function(a, b) {
+              var x = a["durChapterTime"] || 0;
+              var y = b["durChapterTime"] || 0;
+              return y - x;
+            })
+          );
+        } else {
+          that.$message.error(response.data.errorMsg);
+        }
         that.$store.commit("setConnectStatus", "已连接 ");
         that.$store.commit("setNewConnect", false);
       })
