@@ -182,7 +182,7 @@ export default {
       this.uploadConfig();
     },
     uploadConfig() {
-      Axios.post("/saveBook", this.config);
+      Axios.post("/saveReadConfig", this.config);
     }
   }
 };
