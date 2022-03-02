@@ -65,6 +65,7 @@
 import "../assets/fonts/popfont.css";
 import "../assets/fonts/iconfont.css";
 import config from "../plugins/config";
+import Axios from "axios";
 export default {
   name: "ReadSettings",
   data() {
@@ -148,31 +149,40 @@ export default {
       let config = this.config;
       config.theme = theme;
       this.$store.commit("setConfig", config);
+      this.uploadConfig();
     },
     setFont(font) {
       let config = this.config;
       config.font = font;
       this.$store.commit("setConfig", config);
+      this.uploadConfig();
     },
     moreFontSize() {
       let config = this.config;
       if (config.fontSize < 48) config.fontSize += 2;
       this.$store.commit("setConfig", config);
+      this.uploadConfig();
     },
     lessFontSize() {
       let config = this.config;
       if (config.fontSize > 12) config.fontSize -= 2;
       this.$store.commit("setConfig", config);
+      this.uploadConfig();
     },
     moreReadWidth() {
       let config = this.config;
       if (config.readWidth < 960) config.readWidth += 160;
       this.$store.commit("setConfig", config);
+      this.uploadConfig();
     },
     lessReadWidth() {
       let config = this.config;
       if (config.readWidth > 640) config.readWidth -= 160;
       this.$store.commit("setConfig", config);
+      this.uploadConfig();
+    },
+    uploadConfig() {
+      Axios.post("/saveBook", this.config);
     }
   }
 };
