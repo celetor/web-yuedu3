@@ -35,7 +35,7 @@ export default {
   },
   method: {
     proxyImage(content) {
-      let imgPattern = /<img[^>]*src=\"([^\"]*(?:\"[^>]+\\})?)\"[^>]*>/;
+      let imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/;
       if (!imgPattern.test(content)) {
         return content;
       }
@@ -43,7 +43,7 @@ export default {
       if (/^data:/.test(src)) {
         return content;
       }
-      return '<img src="' + '../../image?path=' + encodeURI(src) +'">';
+      return '<img src="' + "../../image?path=" + encodeURI(src) +'">';
     }
   },
   watch: {
