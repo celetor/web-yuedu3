@@ -33,7 +33,7 @@ export default {
       return this.$store.state.config.fontSize + "px";
     }
   },
-  method: {
+  methods: {
     proxyImage(content) {
       let imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/;
       if (!imgPattern.test(content)) {
