@@ -14,7 +14,10 @@ export default {
       return (
         <div>
           {this.carray.map(a => {
-            return <p style={style} domPropsInnerHTML={this.proxyImage(a)} />;
+            if (!/<img[^>]*src/.test(a)) {
+              return <p style={style} domPropsInnerHTML={a} />;
+            }
+            return <img src={this.proxyImage(a)} />;
           })}
         </div>
       );
@@ -36,15 +39,11 @@ export default {
   methods: {
     proxyImage(content) {
       let imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/;
-      if (!imgPattern.test(content)) {
-        return content;
-      }
       let src = content.match(imgPattern)[1];
       if (/^data:/.test(src)) {
-        return content;
+        return src;
       }
-      return '<img src="' + "../../image?path=" + encodeURI(src) + "&url=" + encodeURI(sessionStorage.getItem("bookUrl"))
- + '">';
+      return "../../image?path=" + encodeURI(src) + "&url=" + encodeURI(sessionStorage.getItem("bookUrl"));
     }
   },
   watch: {
@@ -64,5 +63,11 @@ p {
   display: block;
   word-wrap: break-word;
   word-break: break-all;
+}
+img {
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+  width:90%;
 }
 </style>
