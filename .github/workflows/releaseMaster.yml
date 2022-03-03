@@ -76,5 +76,6 @@ jobs:
           rm -rf legado/app/src/main/assets/web/bookshelf/*
           mv -f $GITHUB_WORKSPACE/master/dist/* legado/app/src/main/assets/web/bookshelf/
           cd legado
-          git commit -a -m "web bookshelf: ${{ env.APP_VER }}"
+          git commit add .
+          git commit -m "web bookshelf: ${{ env.APP_VER }}"
           git push
