@@ -113,6 +113,7 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
+
 export default {
   components: {
     PopCata,
@@ -404,12 +405,12 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
->>>.pop-setting {
+>>> .pop-setting {
   margin-left: 68px;
   top: 0;
 }
 
->>>.pop-cata {
+>>> .pop-cata {
   margin-left: 10px;
 }
 
@@ -418,7 +419,7 @@ export default {
   flex-direction: column;
   align-items: center;
 
-  >>>.no-point {
+  >>> .no-point {
     pointer-events: none;
   }
 
@@ -505,12 +506,12 @@ export default {
     width: 670px;
     margin: 0 auto;
 
-    >>>.el-icon-loading {
+    >>> .el-icon-loading {
       font-size: 36px;
       color: #B5B5B5;
     }
 
-    >>>.el-loading-text {
+    >>> .el-loading-text {
       font-weight: 500;
       color: #B5B5B5;
     }
@@ -534,11 +535,11 @@ export default {
 }
 
 .day {
-  >>>.popup {
+  >>> .popup {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   }
 
-  >>>.tool-icon {
+  >>> .tool-icon {
     border: 1px solid rgba(0, 0, 0, 0.1);
     margin-top: -1px;
     color: #000;
@@ -548,18 +549,18 @@ export default {
     }
   }
 
-  >>>.chapter {
+  >>> .chapter {
     border: 1px solid #d8d8d8;
     color: #262626;
   }
 }
 
 .night {
-  >>>.popup {
+  >>> .popup {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.48), 0 0 6px rgba(0, 0, 0, 0.16);
   }
 
-  >>>.tool-icon {
+  >>> .tool-icon {
     border: 1px solid #444;
     margin-top: -1px;
     color: #666;
@@ -569,12 +570,12 @@ export default {
     }
   }
 
-  >>>.chapter {
+  >>> .chapter {
     border: 1px solid #444;
     color: #666;
   }
 
-  >>>.popper__arrow {
+  >>> .popper__arrow {
     background: #666;
   }
 }
