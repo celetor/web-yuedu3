@@ -67,3 +67,16 @@ jobs:
           name: master_${{ env.APP_VER }}
           path: ${{ github.workspace }}/master/dist
           if-no-files-found: error
+
+      - name: Push Assets To legado
+ ##       if: ${{ github.actor == 'gedoor' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git clone "https://${{ github.actor }}:${{ secrets.ACTIONS_TOKEN }}@github.com/${{ github.actor }}/legado" --depth 1
+          rm -rf legado/app/src/main/assets/web/bookshelf/*
+          mkdir legado/app/src/main/assets/web/bookshelf
+          mv -f $GITHUB_WORKSPACE/dist/* legado/app/src/main/assets/web/bookshelf/
+          cd gedoor
+          git commit -m -a "update web bookshelf${{ env.APP_VER }}"
+          git push
