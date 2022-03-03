@@ -54,7 +54,10 @@
         </div>
       </div>
       <div class="bottom-icons">
-        <a href="https://github.com/gedoor/legado_web_bookshelf" target="_blank">
+        <a
+          href="https://github.com/gedoor/legado_web_bookshelf"
+          target="_blank"
+        >
           <div class="bottom-icon">
             <img :src="require('../assets/imgs/github.png')" alt="" />
           </div>
@@ -73,7 +76,11 @@
             <div class="cover-img">
               <img
                 class="cover"
-                :src="/^data:/.test(book.coverUrl) ? book.coverUrl : ('../cover?path=' + encodeURIComponent(book.coverUrl))"
+                :src="
+                  /^data:/.test(book.coverUrl)
+                    ? book.coverUrl
+                    : '../cover?path=' + encodeURIComponent(book.coverUrl)
+                "
                 alt=""
               />
             </div>
@@ -105,7 +112,7 @@
 
 <script>
 import "../assets/fonts/shelffont.css";
-import Axios from "axios";
+import ajax from "../plugins/ajax";
 
 export default {
   data() {
@@ -135,9 +142,10 @@ export default {
       background: "rgb(247,247,247)"
     });
     const that = this;
-    Axios.get("/getBookshelf", {
-      timeout: 3000
-    })
+    ajax
+      .get("/getBookshelf", {
+        timeout: 3000
+      })
       .then(function(response) {
         that.loading.close();
         that.$store.commit("setConnectType", "success");

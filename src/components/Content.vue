@@ -43,7 +43,12 @@ export default {
       if (/^data:/.test(src)) {
         return src;
       }
-      return "../../image?path=" + encodeURIComponent(src) + "&url=" + encodeURIComponent(sessionStorage.getItem("bookUrl"));
+      return (
+        "../../image?path=" +
+        encodeURIComponent(src) +
+        "&url=" +
+        encodeURIComponent(sessionStorage.getItem("bookUrl"))
+      );
     }
   },
   watch: {

@@ -110,9 +110,9 @@
 import PopCata from "../components/PopCatalog.vue";
 import ReadSettings from "../components/ReadSettings.vue";
 import Pcontent from "../components/Content.vue";
-import Axios from "axios";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
+import ajax from "../plugins/ajax";
 export default {
   components: {
     PopCata,
@@ -318,7 +318,7 @@ export default {
   },
   methods: {
     getCatalog(bookUrl) {
-      return Axios.get("/getChapterList?url=" + encodeURIComponent(bookUrl));
+      return ajax.get("/getChapterList?url=" + encodeURIComponent(bookUrl));
     },
     getContent(index) {
       //展示进度条
@@ -345,26 +345,28 @@ export default {
       //强制滚回顶层
       jump(this.$refs.top, { duration: 0 });
       let that = this;
-      Axios.get(
-        "/getBookContent?url=" +
-          encodeURIComponent(bookUrl) +
-          "&index=" +
-          chapterIndex
-      ).then(
-        res => {
-          let data = res.data.data;
-          that.content = data.split(/\n+/);
-          this.$store.commit("setContentLoading", true);
-          that.loading.close();
-          that.noPoint = false;
-          that.$store.commit("setShowContent", true);
-        },
-        err => {
-          that.$message.error("获取章节内容失败");
-          that.content = "　　获取章节内容失败！";
-          throw err;
-        }
-      );
+      ajax
+        .get(
+          "/getBookContent?url=" +
+            encodeURIComponent(bookUrl) +
+            "&index=" +
+            chapterIndex
+        )
+        .then(
+          res => {
+            let data = res.data.data;
+            that.content = data.split(/\n+/);
+            this.$store.commit("setContentLoading", true);
+            that.loading.close();
+            that.noPoint = false;
+            that.$store.commit("setShowContent", true);
+          },
+          err => {
+            that.$message.error("获取章节内容失败");
+            that.content = "　　获取章节内容失败！";
+            throw err;
+          }
+        );
     },
     toTop() {
       jump(this.$refs.top);

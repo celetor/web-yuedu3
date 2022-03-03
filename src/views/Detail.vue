@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import Axios from "axios";
+import ajax from "../plugins/ajax";
 export default {
   data() {
     return {
@@ -34,18 +34,20 @@ export default {
   },
   mounted() {
     const that = this;
-    Axios.get(
-      "/getChapterList?url=" +
-        encodeURIComponent(sessionStorage.getItem("bookUrl"))
-    ).then(
-      res => {
-        that.$store.commit("setCatalog", res.data.data);
-        sessionStorage.setItem("catalog", JSON.stringify(res.data.data));
-      },
-      err => {
-        throw err;
-      }
-    );
+    ajax
+      .get(
+        "/getChapterList?url=" +
+          encodeURIComponent(sessionStorage.getItem("bookUrl"))
+      )
+      .then(
+        res => {
+          that.$store.commit("setCatalog", res.data.data);
+          sessionStorage.setItem("catalog", JSON.stringify(res.data.data));
+        },
+        err => {
+          throw err;
+        }
+      );
   },
   methods: {
     toChapter(chapterUrl, chapterName, chapterID) {

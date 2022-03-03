@@ -65,7 +65,7 @@
 import "../assets/fonts/popfont.css";
 import "../assets/fonts/iconfont.css";
 import config from "../plugins/config";
-import Axios from "axios";
+import ajax from "../plugins/ajax";
 export default {
   name: "ReadSettings",
   data() {
@@ -182,7 +182,7 @@ export default {
       this.uploadConfig();
     },
     uploadConfig() {
-      Axios.post("/saveReadConfig", this.config);
+      ajax.post("/saveReadConfig", this.config);
     }
   }
 };
