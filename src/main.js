@@ -5,10 +5,10 @@ import "./plugins/element.js";
 import store from "./plugins/vuex.js";
 import "./plugins/md5.js";
 import ajax from "./plugins/ajax";
+import vuex from "./plugins/vuex";
 
 Vue.config.productionTip = false;
-
-var app = new Vue({
+new Vue({
   router,
   store,
   render: h => h(App)
@@ -19,5 +19,5 @@ var app = new Vue({
  */
 ajax.get("/getReadConfig").then(res => {
   var config = JSON.parse(res.data.data);
-  app.$store.commit("setConfig", config);
+  vuex.commit("setConfig", config);
 });
