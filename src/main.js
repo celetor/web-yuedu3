@@ -18,7 +18,7 @@ new Vue({
  * 加载配置
  */
 ajax.get("/getReadConfig").then(res => {
-  var config = JSON.parse(res.data.da);
+  var config = JSON.parse(res.data.data);
   this.config = config;
   this.$store.commit("setConfig", config);
 });
