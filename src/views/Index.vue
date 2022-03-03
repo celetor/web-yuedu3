@@ -150,7 +150,7 @@ export default {
         that.loading.close();
         that.$store.commit("setConnectType", "success");
         if (response.data.isSuccess) {
-          that.$store.commit("increaseBookNum", response.data.data.length);
+          //that.$store.commit("increaseBookNum", response.data.data.length);
           that.$store.commit(
             "addBooks",
             response.data.data.sort(function(a, b) {
