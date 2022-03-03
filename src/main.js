@@ -8,7 +8,7 @@ import ajax from "./plugins/ajax";
 
 Vue.config.productionTip = false;
 
-new Vue({
+var app = new Vue({
   router,
   store,
   render: h => h(App)
@@ -19,6 +19,5 @@ new Vue({
  */
 ajax.get("/getReadConfig").then(res => {
   var config = JSON.parse(res.data.data);
-  this.config = config;
-  this.$store.commit("setConfig", config);
+  app.$store.commit("setConfig", config);
 });
