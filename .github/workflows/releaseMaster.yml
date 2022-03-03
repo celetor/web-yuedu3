@@ -35,8 +35,6 @@ jobs:
           echo "APP_VER=$version" >> $GITHUB_ENV
           tag_name=$(curl -s https://api.github.com/repos/gedoor/legado_web_bookshelf/releases/latest|jq .tag_name -r)
           echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
-          git config --global user.name "github-actions"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
       - name: Create Release
         if: ${{ env.TAG_NAME != env.APP_VER }}
@@ -72,6 +70,8 @@ jobs:
       - name: Push changes to legado
         if: ${{ github.actor == 'gedoor' }}
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git clone "https://${{ github.actor }}:${{ secrets.ACTIONS_TOKEN }}@github.com/${{ github.actor }}/legado" --depth 1
           rm -rf legado/app/src/main/assets/web/bookshelf/*
           mv -f $GITHUB_WORKSPACE/master/dist/* legado/app/src/main/assets/web/bookshelf/
