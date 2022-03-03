@@ -73,7 +73,7 @@
             <div class="cover-img">
               <img
                 class="cover"
-                :src="/^data:/.test(book.coverUrl) ? book.coverUrl : ('../cover?path=' + encodeURI(book.coverUrl))"
+                :src="/^data:/.test(book.coverUrl) ? book.coverUrl : ('../cover?path=' + encodeURIComponent(book.coverUrl))"
                 alt=""
               />
             </div>
