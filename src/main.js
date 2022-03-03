@@ -15,6 +15,9 @@ new Vue({
   render: h => h(App)
 }).$mount("#app");
 
+/**
+ * 加载配置
+ */
 ajax.get("/getReadConfig").then(res => {
   var config = JSON.parse(res.data.da);
   this.config = config;
