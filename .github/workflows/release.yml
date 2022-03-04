@@ -4,23 +4,15 @@ on: [workflow_dispatch]
 
 
 jobs:
-  master:
+  buildMaster:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout web-yuedu3 Project
+      - name: Checkout master
         uses: actions/checkout@v2
         with:
           ref: master
           path: master
 
-      - name: Checkout web-yuedu3 Project
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          ref: slave
-          path: slave
-          
       - name: Build Master
         working-directory: master
         run: |
@@ -28,17 +20,32 @@ jobs:
           npm run-script build
           zip -q -r master_dist.zip ./dist
 
+  buildSlave:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout slave
+        uses: actions/checkout@v2
+        with:
+          ref: slave
+          path: slave
+
       - name: Build Slave
         working-directory: slave
         run: |
           git config --global user.name  Robot
           git config --global user.email github-actions@github.com
-          git pull origin master --allow-unrelated-histories
+          git fetch origin master
+          git merge origin FETCH_HEAD
+          git pull --rebase origin master
           git push origin slave
           npm install
           npm run-script build
           zip -q -r slave_dist.zip ./dist
 
+  createRelease:
+    runs-on: ubuntu-latest
+    needs: [ buildMaster, buildSlave ]
+    steps:
       - name: Set Env
         shell: bash
         run: |
@@ -46,7 +53,7 @@ jobs:
           echo "APP_VER=$version" >> $GITHUB_ENV
           tag_name=$(curl -s https://api.github.com/repos/gedoor/legado_web_bookshelf/releases/latest|jq .tag_name -r)
           echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
-          
+
       - name: Create Release
         if: ${{ env.TAG_NAME != env.APP_VER }}
         id: create_release
@@ -70,6 +77,14 @@ jobs:
           asset_name: master_${{ env.APP_VER }}.zip
           asset_content_type: application/octet-stream
 
+      - name: Upload Master
+        if: ${{ env.TAG_NAME == env.APP_VER }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: master_${{ env.APP_VER }}
+          path: ${{ github.workspace }}/master/dist
+          if-no-files-found: error
+
       - name: Upload Release Asset Slave
         if: ${{ env.TAG_NAME != env.APP_VER }}
         uses: actions/upload-release-asset@v1
@@ -81,14 +96,6 @@ jobs:
           asset_name: slave_${{ env.APP_VER }}.zip
           asset_content_type: application/octet-stream
 
-      - name: Upload Master
-        if: ${{ env.TAG_NAME == env.APP_VER }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: master_${{ env.APP_VER }}
-          path: ${{ github.workspace }}/master/dist
-          if-no-files-found: error
-
       - name: Upload Slave
         if: ${{ env.TAG_NAME == env.APP_VER }}
         uses: actions/upload-artifact@v2
@@ -96,5 +103,3 @@ jobs:
           name: slave_${{ env.APP_VER }}
           path: ${{ github.workspace }}/slave/dist
           if-no-files-found: error
-
-
