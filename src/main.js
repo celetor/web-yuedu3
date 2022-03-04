@@ -22,18 +22,10 @@ ajax.get("/getReadConfig").then(res => {
   if (data) {
     var config = JSON.parse(data);
     var mConfig = store.state.config;
-    if (!config.theme) {
-      config.theme = mConfig.theme;
-    }
-    if (!config.font) {
-      config.font = mConfig.font;
-    }
-    if (!config.fontSize) {
-      config.fontSize = mConfig.fontSize;
-    }
-    if (!config.readWidth) {
-      config.readWidth = mConfig.readWidth;
-    }
+    config.theme ||= mConfig.theme;
+    config.font ||= mConfig.font;
+    config.fontSize ||= mConfig.fontSize;
+    config.readWidth ||= mConfig.readWidth;
     vuex.commit("setConfig", config);
   }
 });
