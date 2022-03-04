@@ -1,0 +1,41 @@
+name: Build Master
+
+on: [workflow_dispatch, push]
+
+
+jobs:
+  master:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout legado_web_bookshelf Project
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          path: master
+
+      - name: Build Master
+        working-directory: master
+        run: |
+          npm install
+          npm run-script build
+          zip -q -r master_dist.zip ./dist
+
+      - name: Set Env
+        shell: bash
+        run: |
+          version="v$(date -d "8 hour" -u +3.%y.%m%d%H)"
+          echo "APP_VER=$version" >> $GITHUB_ENV
+
+      - name: Push changes to legado
+        if: ${{ github.actor == 'gedoor' }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git clone "https://${{ github.actor }}:${{ secrets.ACTIONS_TOKEN }}@github.com/${{ github.actor }}/legado" --depth 1
+          rm -rf legado/app/src/main/assets/web/bookshelf/*
+          mv -f $GITHUB_WORKSPACE/master/dist/* legado/app/src/main/assets/web/bookshelf/
+          cd legado
+          git add -A
+          git commit -m "web bookshelf: ${{ env.APP_VER }}"
+          git push
