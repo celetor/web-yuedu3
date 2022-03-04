@@ -22,7 +22,7 @@ ajax.get("/getReadConfig").then(res => {
   if (data) {
     var config = JSON.parse(data);
     var defaultConfig = store.state.config;
-    Object.assign(defaultConfig, config);
+    config = Object.assign(defaultConfig, config);
     vuex.commit("setConfig", config);
   }
 });
