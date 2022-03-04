@@ -47,7 +47,9 @@ export default {
         "../../image?path=" +
         encodeURIComponent(src) +
         "&url=" +
-        encodeURIComponent(sessionStorage.getItem("bookUrl"))
+        encodeURIComponent(sessionStorage.getItem("bookUrl")) +
+        "&width=" +
+        this.$store.state.config.readWidth
       );
     }
   },
