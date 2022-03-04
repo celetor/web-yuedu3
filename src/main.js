@@ -21,11 +21,8 @@ ajax.get("/getReadConfig").then(res => {
   var data = res.data.data;
   if (data) {
     var config = JSON.parse(data);
-    var mConfig = store.state.config;
-    config.theme ||= mConfig.theme;
-    config.font ||= mConfig.font;
-    config.fontSize ||= mConfig.fontSize;
-    config.readWidth ||= mConfig.readWidth;
+    var defaultConfig = store.state.config;
+    Object.assign(defaultConfig, config);
     vuex.commit("setConfig", config);
   }
 });
