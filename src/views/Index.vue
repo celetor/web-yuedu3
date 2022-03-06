@@ -1,6 +1,6 @@
 <template>
   <div class="index-wrapper">
-    <div class="navigation-wrapper">
+    <div class="navigation-wrapper" :style="navigationClass">
       <div class="navigation-title">
         阅读
       </div>
@@ -216,7 +216,7 @@ export default {
               RegExp.$1,
               RegExp.$1.length == 1
                 ? o[k]
-                : ("00" + o[k]).substr(("" + o[k]).length)
+                :  ("00" + o[k]).substr(("" + o[k]).length)
             );
           }
         }
@@ -250,6 +250,18 @@ export default {
     },
     newConnect() {
       return this.$store.state.newConnect;
+    },
+    showMenu() {
+      return this.$store.state.miniInterface;
+    },
+    navigationClass() {
+      return !this.showMenu || (this.showMenu && this.showNavigation)
+        ? {
+            display: "block"
+          }
+        : {
+            display: "none"
+          };
     }
   }
 };
@@ -266,6 +278,7 @@ export default {
     width: 260px;
     min-width: 260px;
     padding: 48px 36px;
+    height: 100vh;
     background-color: #F7F7F7;
 
     .navigation-title {
@@ -353,23 +366,24 @@ export default {
   .shelf-wrapper {
     padding: 48px 48px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
 
-    >>>.el-icon-loading {
+    >>> .el-icon-loading {
       font-size: 36px;
       color: #B5B5B5;
     }
 
-    >>>.el-loading-text {
+    >>> .el-loading-text {
       font-weight: 500;
       color: #B5B5B5;
     }
 
     .books-wrapper {
-      height: 100%;
       overflow: scroll;
 
       .wrapper {
-        display: grid ;
+        display: grid;
         grid-template-columns: repeat(auto-fill, 380px);
         justify-content: space-around;
         grid-gap: 10px;
@@ -451,6 +465,40 @@ export default {
 
     .books-wrapper::-webkit-scrollbar {
       width: 0 !important;
+    }
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .index-wrapper {
+    overflow-x: hidden;
+
+    >>> .navigation-wrapper {
+      padding: 20px 24px;
+      box-sizing: border-box;
+      display: none;
+    }
+
+    >>> .shelf-wrapper {
+      padding: 0;
+
+      .shelf-title {
+        padding: 20px 24px 0 24px;
+      }
+      
+      .books-wrapper {
+        .wrapper {
+          display: flex;
+          flex-direction: column;
+  
+          .book {
+            box-sizing: border-box;
+            width: 100%;
+            margin-bottom: 0;
+            padding: 10px 20px;
+          }
+        }
+      }
     }
   }
 }

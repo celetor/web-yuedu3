@@ -3,12 +3,13 @@
     class="chapter-wrapper"
     :style="bodyTheme"
     :class="{ night: isNight, day: !isNight }"
+    @click="showToolBar = !showToolBar"
   >
     <div class="tool-bar" :style="leftBarTheme">
       <div class="tools">
         <el-popover
           placement="right"
-          :width="cataWidth"
+          :width="popupWidth"
           trigger="click"
           :visible-arrow="false"
           v-model="popCataVisible"
@@ -28,8 +29,8 @@
           </div>
         </el-popover>
         <el-popover
-          placement="bottom-right"
-          width="470"
+          placement="right"
+          :width="popupWidth"
           trigger="click"
           :visible-arrow="false"
           v-model="readSettingsVisible"
@@ -82,12 +83,14 @@
           <div class="iconfont">
             &#58920;
           </div>
+          <span v-if="$store.state.miniInterface">上一章</span>
         </div>
         <div
           class="tool-icon"
           :class="{ 'no-point': noPoint }"
           @click="toNextChapter"
         >
+          <span v-if="$store.state.miniInterface">下一章</span>
           <div class="iconfont">
             &#58913;
           </div>
@@ -208,6 +211,8 @@ export default {
   },
   destroyed() {
     window.removeEventListener("keyup", this.func_keyup);
+    this.readSettingsVisible = false;
+    this.popCataVisible = false;
   },
   watch: {
     chapterName(to) {
@@ -248,22 +253,7 @@ export default {
       title: "",
       content: [],
       noPoint: true,
-      isNight: this.$store.state.config.theme == 6,
-      bodyTheme: {
-        background: config.themes[this.$store.state.config.theme].body
-      },
-      chapterTheme: {
-        background: config.themes[this.$store.state.config.theme].content,
-        width: this.$store.state.config.readWidth - 130 + "px"
-      },
-      leftBarTheme: {
-        background: config.themes[this.$store.state.config.theme].popup,
-        marginLeft: -(this.$store.state.config.readWidth / 2 + 68) + "px"
-      },
-      rightBarTheme: {
-        background: config.themes[this.$store.state.config.theme].popup,
-        marginRight: -(this.$store.state.config.readWidth / 2 + 52) + "px"
-      }
+      showToolBar: true
     };
   },
   computed: {
@@ -307,11 +297,53 @@ export default {
     popupColor() {
       return config.themes[this.config.theme].popup;
     },
-    readWidth() {
-      return this.$store.state.config.readWidth - 130 + "px";
+    isNight() {
+      return this.$store.state.config.theme == 6;
     },
-    cataWidth() {
-      return this.$store.state.config.readWidth - 33;
+    readWidth() {
+      if (!this.$store.state.miniInterface) {
+        return this.$store.state.config.readWidth - 130 + "px";
+      } else {
+        return window.innerWidth + "px";
+      }
+    },
+    popupWidth() {
+      if (!this.$store.state.miniInterface) {
+        return this.$store.state.config.readWidth - 33;
+      } else {
+        return window.innerWidth - 33;
+      }
+    },
+    bodyTheme() {
+      return {
+        background: config.themes[this.$store.state.config.theme].body
+      };
+    },
+    chapterTheme() {
+      return {
+        background: config.themes[this.$store.state.config.theme].content,
+        width: this.readWidth
+      };
+    },
+    leftBarTheme() {
+      return {
+        background: config.themes[this.$store.state.config.theme].popup,
+        marginLeft: this.$store.state.miniInterface
+          ? 0
+            : -(this.$store.state.config.readWidth / 2 + 68) + "px",
+        display: this.$store.state.miniInterface && !this.showToolBar ?
+          "none" : "block"
+      };
+    },
+    rightBarTheme() {
+      return {
+        background: config.themes[this.$store.state.config.theme].popup,
+        marginRight: this.$store.state.miniInterface
+          ? 0
+            : -(this.$store.state.config.readWidth / 2 + 52) + "px",
+        display: this.$store.state.miniInterface && !this.showToolBar ?
+          "none" : "block"
+      };
     },
     show() {
       return this.$store.state.showContent;
@@ -577,6 +609,54 @@ export default {
 
   >>> .popper__arrow {
     background: #666;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .chapter-wrapper {
+    padding: 0;
+
+    .tool-bar {
+      left: 0;
+      width: 100vw;
+      margin-left: 0 !important;
+
+      .tools {
+        flex-direction: row;
+        justify-content: space-between;
+
+        .tool-icon {
+          border: none;
+        }
+      }
+    }
+
+    .read-bar {
+      right: 0;
+      width: 100vw;
+      margin-right: 0 !important;
+
+      .tools {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0 15px;
+
+        .tool-icon {
+          border: none;
+          width: auto;
+
+          .iconfont {
+            display: inline-block;
+          }
+        }
+      }
+    }
+
+    .chapter {
+      width: 100vw !important;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
   }
 }
 </style>

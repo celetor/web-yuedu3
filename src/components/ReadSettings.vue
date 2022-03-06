@@ -44,7 +44,7 @@
             >
           </div>
         </li>
-        <li class="read-width">
+        <li class="read-width" v-if="!$store.state.miniInterface">
           <i>页面宽度</i>
           <div class="resize">
             <span class="less" @click="lessReadWidth"
@@ -202,7 +202,7 @@ export default {
 .settings-wrapper {
   user-select: none;
   margin: -13px;
-  width: 478px;
+  // width: 478px;
   height: 300px;
   text-align: left;
   padding: 40px 0 40px 24px;
@@ -239,6 +239,7 @@ export default {
           width: 34px;
           height: 34px;
           margin-right: 16px;
+          margin-top: 5px;
           border-radius: 100%;
           display: inline-block;
           cursor: pointer;
@@ -388,6 +389,14 @@ export default {
     b {
       border-right: 1px solid #e5e5e5;
     }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .settings-wrapper  i {
+    display: flex !important;
+    flex-wrap: wrap;
+    padding-bottom: 5px !important;
   }
 }
 </style>
