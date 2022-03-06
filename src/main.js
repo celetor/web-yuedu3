@@ -6,6 +6,7 @@ import store from "./plugins/vuex.js";
 import "./plugins/md5.js";
 import ajax from "./plugins/ajax";
 import vuex from "./plugins/vuex";
+import VueLazyload from "vue-lazyload";
 
 Vue.config.productionTip = false;
 new Vue({
@@ -13,6 +14,13 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount("#app");
+
+Vue.use(VueLazyload, {
+  preLoad: 1.3,
+  error: "require('./assets/imgs/error.png')",
+  loading: "require('./assets/imgs/loading.gif')",
+  attempt: 1
+});
 
 /**
  * 加载配置

@@ -1,52 +1,23 @@
-name: Merge And Release
+name: Release
 
 on: [workflow_dispatch]
 
 
 jobs:
-  master:
+  prepare:
     runs-on: ubuntu-latest
-
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ env.APP_VER }}
     steps:
-      - name: Checkout web-yuedu3 Project
-        uses: actions/checkout@v2
-        with:
-          ref: master
-          path: master
-
-      - name: Checkout web-yuedu3 Project
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          ref: slave
-          path: slave
-          
-      - name: Build Master
-        working-directory: master
-        run: |
-          npm install
-          npm run-script build
-          zip -q -r master_dist.zip ./dist
-
-      - name: Build Slave
-        working-directory: slave
-        run: |
-          git config --global user.name  Robot
-          git config --global user.email github-actions@github.com
-          git pull origin master --allow-unrelated-histories
-          git push origin slave
-          npm install
-          npm run-script build
-          zip -q -r slave_dist.zip ./dist
-
       - name: Set Env
         shell: bash
         run: |
           version="v$(date -d "8 hour" -u +3.%y.%m%d%H)"
           echo "APP_VER=$version" >> $GITHUB_ENV
-          tag_name=$(curl -s https://api.github.com/repos/gedoor/legado_web_bookshelf/releases/latest|jq .tag_name -r)
+          tag_name=$(curl -s "https://api.github.com/repos/${{ github.actor }}/legado_web_bookshelf/releases/latest" | jq .tag_name -r)
           echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
-          
+
       - name: Create Release
         if: ${{ env.TAG_NAME != env.APP_VER }}
         id: create_release
@@ -59,42 +30,76 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset Master
-        if: ${{ env.TAG_NAME != env.APP_VER }}
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  buildMaster:
+    needs: [ prepare ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/master/master_dist.zip
-          asset_name: master_${{ env.APP_VER }}.zip
-          asset_content_type: application/octet-stream
+          ref: master
+          fetch-depth: 0
+          path: master
 
-      - name: Upload Release Asset Slave
-        if: ${{ env.TAG_NAME != env.APP_VER }}
+      - name: Build Master
+        working-directory: master
+        run: |
+          npm install
+          npm run-script build
+          zip -q -r master_dist.zip ./dist
+
+      - name: Upload Release Asset Master
+        if: ${{ needs.prepare.outputs.upload_url }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/slave/slave_dist.zip
-          asset_name: slave_${{ env.APP_VER }}.zip
+          upload_url: ${{ needs.prepare.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/master/master_dist.zip
+          asset_name: master_${{ needs.prepare.outputs.version }}.zip
           asset_content_type: application/octet-stream
 
       - name: Upload Master
-        if: ${{ env.TAG_NAME == env.APP_VER }}
+        if: ${{ needs.prepare.outputs.upload_url }}
         uses: actions/upload-artifact@v2
         with:
-          name: master_${{ env.APP_VER }}
+          name: master_${{ needs.prepare.outputs.version }}
           path: ${{ github.workspace }}/master/dist
           if-no-files-found: error
 
+  buildSlave:
+    runs-on: ubuntu-latest
+    needs: [ prepare ]
+    steps:
+      - name: Checkout slave
+        uses: actions/checkout@v2
+        with:
+          ref: slave
+          fetch-depth: 0
+          path: slave
+
+      - name: Build Slave
+        working-directory: slave
+        run: |
+          npm install
+          npm run-script build
+          zip -q -r slave_dist.zip ./dist
+
+      - name: Upload Release Asset Slave
+        if: ${{ needs.prepare.outputs.upload_url }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepare.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/slave/slave_dist.zip
+          asset_name: slave_${{ needs.prepare.outputs.version }}.zip
+          asset_content_type: application/octet-stream
+
       - name: Upload Slave
-        if: ${{ env.TAG_NAME == env.APP_VER }}
+        if: ${{ needs.prepare.outputs.upload_url }}
         uses: actions/upload-artifact@v2
         with:
-          name: slave_${{ env.APP_VER }}
+          name: slave_${{ needs.prepare.outputs.version }}
           path: ${{ github.workspace }}/slave/dist
           if-no-files-found: error
-
-
