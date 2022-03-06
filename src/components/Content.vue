@@ -17,7 +17,7 @@ export default {
             if (!/<img[^>]*src/.test(a)) {
               return <p style={style} domPropsInnerHTML={a} />;
             }
-            return <img src={this.proxyImage(a)} />;
+            return <img v-lazy={this.proxyImage(a)} />;
           })}
         </div>
       );
