@@ -7,7 +7,13 @@
 <script>
 export default {
   name: "app",
-  components: {}
+  components: {},
+  beforeCreate() {
+    this.$store.commit("setMiniInterface", window.innerWidth < 750);
+    window.onresize = () => {
+      this.$store.commit("setMiniInterface", window.innerWidth < 750);
+    };
+  }
 };
 </script>
 
