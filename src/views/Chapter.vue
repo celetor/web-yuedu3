@@ -253,7 +253,7 @@ export default {
       title: "",
       content: [],
       noPoint: true,
-      showToolBar: true
+      showToolBar: false
     };
   },
   computed: {
