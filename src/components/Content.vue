@@ -75,6 +75,6 @@ img {
   margin-left:auto;
   margin-right:auto;
   display:block;
-  width:90%;
+  width:100%;
 }
 </style>
