@@ -101,8 +101,17 @@
     <div class="chapter" ref="content" :style="chapterTheme">
       <div class="content">
         <div class="top-bar" ref="top"></div>
-        <div class="title" ref="title" v-if="show">{{ title }}</div>
-        <Pcontent :carray="content" />
+        <pull-to
+          :top-load-method="toLastChapter"
+          :bottom-load-method="toNextChapter"
+          :is-top-bounce="onTop"
+          :is-bottom-bounce="onBottom"
+          :top-config="topConfig"
+          :bottom-config="bottomConfig"
+        >
+          <div class="title" ref="title" v-if="show">{{ title }}</div>
+          <Pcontent :carray="content" />
+        </pull-to>
         <div class="bottom-bar" ref="bottom"></div>
       </div>
     </div>
@@ -116,12 +125,14 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
+import PullTo from "vue-pull-to";
 
 export default {
   components: {
     PopCata,
     Pcontent,
-    ReadSettings
+    ReadSettings,
+    PullTo
   },
   created() {
     var config = JSON.parse(localStorage.getItem("config"));
@@ -154,45 +165,6 @@ export default {
       localStorage.setItem(bookUrl, JSON.stringify(book));
     }
 
-    // window.addEventListener keyup 声明函数
-
-    this.func_keyup = function(event) {
-      switch (event.key) {
-        case "ArrowLeft":
-          event.stopPropagation();
-          event.preventDefault();
-          that.toLastChapter();
-          break;
-        case "ArrowRight":
-          event.stopPropagation();
-          event.preventDefault();
-          that.toNextChapter();
-          break;
-        case "ArrowUp":
-          event.stopPropagation();
-          event.preventDefault();
-          if (document.documentElement.scrollTop === 0) {
-            that.$message.warning("已到达页面顶部");
-          } else {
-            jump(0 - document.documentElement.clientHeight + 100);
-          }
-          break;
-        case "ArrowDown":
-          event.stopPropagation();
-          event.preventDefault();
-          if (
-            document.documentElement.clientHeight +
-              document.documentElement.scrollTop ===
-            document.documentElement.scrollHeight
-          ) {
-            that.$message.warning("已到达页面底部");
-          } else {
-            jump(document.documentElement.clientHeight - 100);
-          }
-          break;
-      }
-    };
-
     this.getCatalog(bookUrl).then(
       res => {
         let catalog = res.data.data;
@@ -200,7 +172,8 @@ export default {
         that.$store.commit("setReadingBook", book);
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
-        window.addEventListener("keyup", this.func_keyup);
+        window.addEventListener("keyup", this.handleKeyPress);
+        window.addEventListener("scroll", this.handleScroll);
       },
       err => {
         that.loading.close();
@@ -210,7 +183,8 @@ export default {
     );
   },
   destroyed() {
-    window.removeEventListener("keyup", this.func_keyup);
+    window.removeEventListener("keyup", this.handleKeyPress);
+    window.removeEventListener("scroll", this.handleScroll);
     this.readSettingsVisible = false;
     this.popCataVisible = false;
   },
@@ -253,7 +227,15 @@ export default {
       title: "",
       content: [],
       noPoint: true,
-      showToolBar: false
+      showToolBar: false,
+      topConfig: {
+        pullText: "加载上一章",
+        triggerText: "松开加载上一章"
+      },
+      bottomConfig: {
+        pullText: "加载下一章",
+        triggerText: "松开加载下一章"
+      }
     };
   },
   computed: {
@@ -346,6 +328,8 @@ export default {
       };
     },
     show() {
+      document.title = sessionStorage.getItem("bookName") +" | " + this.title;
+      this.handleScroll();
       return this.$store.state.showContent;
     }
   },
@@ -371,6 +355,7 @@ export default {
       book.index = index;
       localStorage.setItem(bookUrl, JSON.stringify(book));
       this.$store.state.readingBook.index = index;
+      sessionStorage.setItem("chapterIndex", index);
       //let chapterUrl = this.$store.state.readingBook.catalog[index].url;
       let chapterName = this.$store.state.readingBook.catalog[index].title;
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
@@ -387,16 +372,26 @@ export default {
         )
         .then(
           res => {
-            let data = res.data.data;
-            that.content = data.split(/\n+/);
+            if (res.data.isSuccess) {
+              let data = res.data.data;
+              that.content = data.split(/\n+/);
+            } else {
+              that.$message.error("书源正文解析错误！");
+              that.content = ["书源正文解析失败！"];
+            }
             this.$store.commit("setContentLoading", true);
             that.loading.close();
             that.noPoint = false;
             that.$store.commit("setShowContent", true);
+            if (!res.data.isSuccess) {
+              throw res.data;
+            }
           },
           err => {
             that.$message.error("获取章节内容失败");
-            that.content = "　　获取章节内容失败！";
+            that.content = ["获取章节内容失败！"];
+            that.loading.close();
+            that.$store.commit("setShowContent", true);
             throw err;
           }
         );
@@ -407,10 +402,13 @@ export default {
     toBottom() {
       jump(this.$refs.bottom);
     },
-    toNextChapter() {
+    toNextChapter(loaded) {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index++;
+      if (typeof loaded === "function") {
+        loaded("done");
+      }
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("下一章");
         this.getContent(index);
@@ -418,10 +416,13 @@ export default {
         this.$message.error("本章是最后一章");
       }
     },
-    toLastChapter() {
+    toLastChapter(loaded) {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index--;
+      if (typeof loaded === "function") {
+        loaded("done");
+      }
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("上一章");
         this.getContent(index);
@@ -431,6 +432,50 @@ export default {
     },
     toShelf() {
       this.$router.push("/");
+    },
+    //监听方向键
+    handleKeyPress(event) {
+      switch (event.key) {
+        case "ArrowLeft":
+          event.stopPropagation();
+          event.preventDefault();
+          this.toLastChapter();
+          break;
+        case "ArrowRight":
+          event.stopPropagation();
+          event.preventDefault();
+          this.toNextChapter();
+          break;
+        case "ArrowUp":
+          event.stopPropagation();
+          event.preventDefault();
+          if (document.documentElement.scrollTop === 0) {
+            this.$message.warning("已到达页面顶部");
+          } else {
+            jump(0 - document.documentElement.clientHeight + 100);
+          }
+          break;
+        case "ArrowDown":
+          event.stopPropagation();
+          event.preventDefault();
+          if (
+            document.documentElement.clientHeight +
+              document.documentElement.scrollTop ===
+            document.documentElement.scrollHeight
+          ) {
+            this.$message.warning("已到达页面底部");
+          } else {
+            jump(document.documentElement.clientHeight - 100);
+          }
+          break;
+      }
+    },
+    //监听页面位置
+    handleScroll() {
+      let doc = document.documentElement;
+      this.onTop = doc.scrollTop === 0;
+      this.onBottom = doc.scrollTop +
+        doc.clientHeight >= doc.scrollHeight;
     }
   }
 };

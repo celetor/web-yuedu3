@@ -15,6 +15,9 @@ new Vue({
   render: h => h(App)
 }).$mount("#app");
 
+/**
+ *图片懒加载全局配置
+*/
 Vue.use(VueLazyload, {
   preLoad: 1.3,
   error: require("./assets/imgs/error.png"),
