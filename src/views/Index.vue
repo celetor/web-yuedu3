@@ -76,7 +76,7 @@
             <div class="cover-img">
               <img
                 class="cover"
-                v-lazy="
+                :src="
                   /^data:/.test(book.coverUrl)
                     ? book.coverUrl
                     : '../cover?path=' + encodeURIComponent(book.coverUrl)
