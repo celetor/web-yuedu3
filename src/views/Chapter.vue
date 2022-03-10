@@ -189,11 +189,12 @@ export default {
     this.popCataVisible = false;
   },
   watch: {
-    chapterName(to) {
-      this.title = to;
+    title() {
+      document.title = sessionStorage.getItem("bookName") +" | " + this.title;
     },
     content() {
       this.$store.commit("setContentLoading", false);
+      setTimeout(()=>this.handleScroll(),500);
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -228,6 +229,8 @@ export default {
       content: [],
       noPoint: true,
       showToolBar: false,
+      onTop: true,
+      onBottom: false,
       topConfig: {
         pullText: "加载上一章",
         triggerText: "松开加载上一章"
@@ -328,8 +331,6 @@ export default {
       };
     },
     show() {
-      document.title = sessionStorage.getItem("bookName") +" | " + this.title;
-      this.handleScroll();
       return this.$store.state.showContent;
     }
   },
