@@ -492,6 +492,10 @@ export default {
   margin-left: 10px;
 }
 
+.scroll-container {
+  overflow-y: hidden !important;
+}
+
 .chapter-wrapper {
   padding: 0 4%;
   flex-direction: column;
