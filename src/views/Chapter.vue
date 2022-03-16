@@ -492,7 +492,7 @@ export default {
   margin-left: 10px;
 }
 
-.scroll-container {
+>>> .scroll-container {
   overflow-y: hidden !important;
 }
 
