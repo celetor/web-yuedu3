@@ -190,11 +190,11 @@ export default {
   },
   watch: {
     title() {
-      document.title = sessionStorage.getItem("bookName") +" | " + this.title;
+      document.title = sessionStorage.getItem("bookName") + " | " + this.title;
     },
     content() {
       this.$store.commit("setContentLoading", false);
-      setTimeout(()=>this.handleScroll(),500);
+      setTimeout(() => this.handleScroll(), 500);
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -315,9 +315,11 @@ export default {
         background: config.themes[this.$store.state.config.theme].popup,
         marginLeft: this.$store.state.miniInterface
           ? 0
-            : -(this.$store.state.config.readWidth / 2 + 68) + "px",
-        display: this.$store.state.miniInterface && !this.showToolBar ?
-          "none" : "block"
+          : -(this.$store.state.config.readWidth / 2 + 68) + "px",
+        display:
+          this.$store.state.miniInterface && !this.showToolBar
+            ? "none"
+            : "block"
       };
     },
     rightBarTheme() {
@@ -325,9 +327,11 @@ export default {
         background: config.themes[this.$store.state.config.theme].popup,
         marginRight: this.$store.state.miniInterface
           ? 0
-            : -(this.$store.state.config.readWidth / 2 + 52) + "px",
-        display: this.$store.state.miniInterface && !this.showToolBar ?
-          "none" : "block"
+          : -(this.$store.state.config.readWidth / 2 + 52) + "px",
+        display:
+          this.$store.state.miniInterface && !this.showToolBar
+            ? "none"
+            : "block"
       };
     },
     show() {
@@ -475,8 +479,7 @@ export default {
     handleScroll() {
       let doc = document.documentElement;
       this.onTop = doc.scrollTop === 0;
-      this.onBottom = doc.scrollTop +
-        doc.clientHeight >= doc.scrollHeight;
+      this.onBottom = doc.scrollTop + doc.clientHeight >= doc.scrollHeight;
     }
   }
 };
