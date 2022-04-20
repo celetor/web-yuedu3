@@ -278,7 +278,6 @@ export default {
     width: 260px;
     min-width: 260px;
     padding: 48px 36px;
-    height: 100vh;
     background-color: #F7F7F7;
 
     .navigation-title {
