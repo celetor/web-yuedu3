@@ -1,11 +1,11 @@
 <template>
   <div class="index-wrapper">
-    <div class="navigation-wrapper" :style="navigationClass">
-      <div class="navigation-title">
-        阅读
-      </div>
-      <div class="navigation-sub-title">
-        清风不识字，何故乱翻书
+    <!-- <div class="navigation-wrapper" :style="navigationClass"> -->
+    <!-- 之前的 style 备份 -->
+    <div class="navigation-wrapper">
+      <div class="navigation-title-wrapper">
+        <div class="navigation-title">阅读</div>
+        <div class="navigation-sub-title">清风不识字，何故乱翻书</div>
       </div>
       <div class="search-wrapper">
         <el-input
@@ -17,40 +17,38 @@
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
       </div>
-      <div class="recent-wrapper">
-        <div class="recent-title">
-          最近阅读
+      <div class="bottom-wrapper">
+        <div class="recent-wrapper">
+          <div class="recent-title">最近阅读</div>
+          <div class="reading-recent">
+            <el-tag
+              :type="readingRecent.name == '尚无阅读记录' ? 'warning' : 'tip'"
+              class="recent-book"
+              @click="
+                toDetail(
+                  readingRecent.url,
+                  readingRecent.name,
+                  readingRecent.chapterIndex
+                )
+              "
+              :class="{ 'no-point': readingRecent.url == '' }"
+            >
+              {{ readingRecent.name }}
+            </el-tag>
+          </div>
         </div>
-        <div class="reading-recent">
-          <el-tag
-            type="warning"
-            class="recent-book"
-            @click="
-              toDetail(
-                readingRecent.url,
-                readingRecent.name,
-                readingRecent.chapterIndex
-              )
-            "
-            :class="{ 'no-point': readingRecent.url == '' }"
-          >
-            {{ readingRecent.name }}
-          </el-tag>
-        </div>
-      </div>
-      <div class="setting-wrapper">
-        <div class="setting-title">
-          基本设定
-        </div>
-        <div class="setting-item">
-          <el-tag
-            :type="connectType"
-            class="setting-connect"
-            :class="{ 'no-point': newConnect }"
-            @click="setIP"
-          >
-            {{ connectStatus }}
-          </el-tag>
+        <div class="setting-wrapper">
+          <div class="setting-title">基本设定</div>
+          <div class="setting-item">
+            <el-tag
+              :type="connectType"
+              class="setting-connect"
+              :class="{ 'no-point': newConnect }"
+              @click="setIP"
+            >
+              {{ connectStatus }}
+            </el-tag>
+          </div>
         </div>
       </div>
       <div class="bottom-icons">
@@ -74,15 +72,7 @@
             @click="toDetail(book.bookUrl, book.name, book.durChapterIndex)"
           >
             <div class="cover-img">
-              <img
-                class="cover"
-                :src="
-                  /^data:/.test(book.coverUrl)
-                    ? book.coverUrl
-                    : '../cover?path=' + encodeURIComponent(book.coverUrl)
-                "
-                alt=""
-              />
+              <img class="cover" :src="getCover(book.coverUrl)" alt="" />
             </div>
             <div
               class="info"
@@ -144,7 +134,7 @@ export default {
     const that = this;
     ajax
       .get("/getBookshelf", {
-        timeout: 3000
+        timeout: 5000
       })
       .then(function(response) {
         that.loading.close();
@@ -216,7 +206,7 @@ export default {
               RegExp.$1,
               RegExp.$1.length == 1
                 ? o[k]
-                :  ("00" + o[k]).substr(("" + o[k]).length)
+                : ("00" + o[k]).substr(("" + o[k]).length)
             );
           }
         }
@@ -236,6 +226,15 @@ export default {
         str = new Date(t).format("yyyy-MM-dd");
       }
       return str;
+    },
+    getCover(coverUrl) {
+      return /^data:/.test(coverUrl)
+        ? coverUrl
+        : (process.env.NODE_ENV !== "production"
+            ? `${process.env.VUE_APP_BASE_URL}:${process.env.VUE_APP_PORT}`
+            : "..") +
+            "/cover?path=" +
+            encodeURIComponent(coverUrl);
     }
   },
   computed: {
@@ -471,11 +470,37 @@ export default {
 @media screen and (max-width: 750px) {
   .index-wrapper {
     overflow-x: hidden;
+    flex-direction: column;
+
+    >>> .navigation-title-wrapper {
+      white-space: nowrap;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    >>> .bottom-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
 
     >>> .navigation-wrapper {
       padding: 20px 24px;
       box-sizing: border-box;
-      display: none;
+      width: 100%;
+
+      .bottom-wrapper {
+        .recent-wrapper, .setting-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+
+       .bottom-icons {
+        display: none;
+      }
     }
 
     >>> .shelf-wrapper {
@@ -484,12 +509,12 @@ export default {
       .shelf-title {
         padding: 20px 24px 0 24px;
       }
-      
+
       .books-wrapper {
         .wrapper {
           display: flex;
           flex-direction: column;
-  
+
           .book {
             box-sizing: border-box;
             width: 100%;
