@@ -101,17 +101,10 @@
     <div class="chapter" ref="content" :style="chapterTheme">
       <div class="content">
         <div class="top-bar" ref="top"></div>
-        <pull-to
-          :top-load-method="toLastChapter"
-          :bottom-load-method="toNextChapter"
-          :is-top-bounce="onTop"
-          :is-bottom-bounce="onBottom"
-          :top-config="topConfig"
-          :bottom-config="bottomConfig"
-        >
-          <div class="title" ref="title" v-if="show">{{ title }}</div>
-          <Pcontent :carray="content" />
-        </pull-to>
+        <div v-for="data in chapterData" :key="data.index">
+          <div class="title" ref="title" v-if="show">{{ data.title }}</div>
+          <Pcontent :carray="data.content" />
+        </div>
         <div class="bottom-bar" ref="bottom"></div>
       </div>
     </div>
@@ -125,14 +118,12 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
-import PullTo from "vue-pull-to";
 
 export default {
   components: {
     PopCata,
     Pcontent,
-    ReadSettings,
-    PullTo
+    ReadSettings
   },
   created() {
     var config = JSON.parse(localStorage.getItem("config"));
@@ -189,12 +180,8 @@ export default {
     this.popCataVisible = false;
   },
   watch: {
-    title() {
-      document.title = sessionStorage.getItem("bookName") + " | " + this.title;
-    },
-    content() {
+    chapterData() {
       this.$store.commit("setContentLoading", false);
-      setTimeout(() => this.handleScroll(), 500);
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -225,20 +212,9 @@ export default {
   },
   data() {
     return {
-      title: "",
-      content: [],
       noPoint: true,
       showToolBar: false,
-      onTop: true,
-      onBottom: false,
-      topConfig: {
-        pullText: "加载上一章",
-        triggerText: "松开加载上一章"
-      },
-      bottomConfig: {
-        pullText: "加载下一章",
-        triggerText: "松开加载下一章"
-      }
+      chapterData: []
     };
   },
   computed: {
@@ -342,10 +318,10 @@ export default {
     getCatalog(bookUrl) {
       return ajax.get("/getChapterList?url=" + encodeURIComponent(bookUrl));
     },
-    getContent(index) {
+    getContent(index, showLoading = true) {
       //展示进度条
-      this.$store.commit("setShowContent", false);
-      if (!this.loading.visible) {
+      showLoading && this.$store.commit("setShowContent", false);
+      if (!this.loading.visible && showLoading) {
         this.loading = this.$loading({
           target: this.$refs.content,
           lock: true,
@@ -362,11 +338,11 @@ export default {
       this.$store.state.readingBook.index = index;
       sessionStorage.setItem("chapterIndex", index);
       //let chapterUrl = this.$store.state.readingBook.catalog[index].url;
-      let chapterName = this.$store.state.readingBook.catalog[index].title;
+      let title = this.$store.state.readingBook.catalog[index].title;
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
-      this.title = chapterName;
+      document.title = sessionStorage.getItem("bookName") + " | " + title;
       //强制滚回顶层
-      jump(this.$refs.top, { duration: 0 });
+      showLoading && jump(this.$refs.top, { duration: 0 });
       let that = this;
       ajax
         .get(
@@ -379,10 +355,12 @@ export default {
           res => {
             if (res.data.isSuccess) {
               let data = res.data.data;
-              that.content = data.split(/\n+/);
+              let content = data.split(/\n+/);
+              that.chapterData.push({ index, content, title });
             } else {
               that.$message.error("书源正文解析错误！");
-              that.content = ["书源正文解析失败！"];
+              let content = ["书源正文解析失败！"];
+              that.chapterData.push({ index, content, title });
             }
             this.$store.commit("setContentLoading", true);
             that.loading.close();
@@ -394,7 +372,8 @@ export default {
           },
           err => {
             that.$message.error("获取章节内容失败");
-            that.content = ["获取章节内容失败！"];
+            let content = ["获取章节内容失败！"];
+            that.chapterData.push({ index, content, title });
             that.loading.close();
             that.$store.commit("setShowContent", true);
             throw err;
@@ -407,13 +386,11 @@ export default {
     toBottom() {
       jump(this.$refs.bottom);
     },
-    toNextChapter(loaded) {
+    toNextChapter() {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index++;
-      if (typeof loaded === "function") {
-        loaded("done");
-      }
+
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("下一章");
         this.getContent(index);
@@ -421,18 +398,28 @@ export default {
         this.$message.error("本章是最后一章");
       }
     },
-    toLastChapter(loaded) {
+    toLastChapter() {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index--;
-      if (typeof loaded === "function") {
-        loaded("done");
-      }
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("上一章");
         this.getContent(index);
       } else {
         this.$message.error("本章是第一章");
+      }
+    },
+    loadmore() {
+      let index = this.$store.state.readingBook.index;
+      if (this.$store.state.readingBook.catalog.length - 1 > index) {
+        this.getContent(index + 1, false)
+      }
+    },
+    //监听页面位置
+    handleScroll() {
+      let doc = document.documentElement;
+      if (doc.scrollTop + doc.clientHeight >= 0.9 * doc.scrollHeight) {
+        this.loadmore()
       }
     },
     toShelf() {
@@ -474,12 +461,6 @@ export default {
           }
           break;
       }
-    },
-    //监听页面位置
-    handleScroll() {
-      let doc = document.documentElement;
-      this.onTop = doc.scrollTop === 0;
-      this.onBottom = doc.scrollTop + doc.clientHeight >= doc.scrollHeight;
     }
   }
 };
