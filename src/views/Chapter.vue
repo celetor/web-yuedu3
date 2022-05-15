@@ -405,7 +405,6 @@ export default {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index--;
-      this.saveReadingBookProgress(index);
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("上一章");
         this.saveReadingBookProgress(
