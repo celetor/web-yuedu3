@@ -101,7 +101,7 @@
     <div class="chapter" ref="content" :style="chapterTheme">
       <div class="content">
         <div class="top-bar" ref="top"></div>
-        <div v-for="data in chapterData" :key="data.index">
+        <div v-for="data in chapterData" :key="data.index" ref="chapter">
           <div class="title" ref="title" v-if="show">{{ data.title }}</div>
           <Pcontent :carray="data.content" />
         </div>
@@ -469,7 +469,7 @@ export default {
       }
       //上滑顶部1/10加载上一章
       if (offset < 0 && scrollTop < 0.1 * scrollHeight) {
-        this.loadBefore();
+        //this.loadBefore();
       }
       this.oldScrollTop = scrollTop;
     }),
