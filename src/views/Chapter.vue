@@ -78,7 +78,7 @@
         <div
           class="tool-icon"
           :class="{ 'no-point': noPoint }"
-          @click="toLastChapter"
+          @click="toPreChapter"
         >
           <div class="iconfont">
             &#58920;
@@ -390,36 +390,54 @@ export default {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index++;
-
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("下一章");
+        this.saveReadingBookProgress(
+          index,
+          this.$store.state.readingBook.catalog[index].title
+        );
         this.getContent(index);
       } else {
         this.$message.error("本章是最后一章");
       }
     },
-    toLastChapter() {
+    toPreChapter() {
       this.$store.commit("setContentLoading", true);
       let index = this.$store.state.readingBook.index;
       index--;
+      this.saveReadingBookProgress(index);
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("上一章");
+        this.saveReadingBookProgress(
+          index,
+          this.$store.state.readingBook.catalog[index].title
+        );
         this.getContent(index);
       } else {
         this.$message.error("本章是第一章");
       }
     },
-    loadmore() {
+    saveReadingBookProgress(index, title) {
+      ajax.post("/saveBookProgress", {
+        name: this.$store.state.readingBook.name,
+        author: String,
+        durChapterIndex: index,
+        durChapterPos: 0,
+        durChapterTime: new Date().getMilliseconds(),
+        durChapterTitle: title
+      });
+    },
+    loadMore() {
       let index = this.$store.state.readingBook.index;
       if (this.$store.state.readingBook.catalog.length - 1 > index) {
-        this.getContent(index + 1, false)
+        this.getContent(index + 1, false);
       }
     },
     //监听页面位置
     handleScroll() {
       let doc = document.documentElement;
       if (doc.scrollTop + doc.clientHeight >= 0.9 * doc.scrollHeight) {
-        this.loadmore()
+        this.loadMore();
       }
     },
     toShelf() {
