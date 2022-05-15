@@ -418,7 +418,7 @@ export default {
     //监听页面位置
     handleScroll() {
       let doc = document.documentElement;
-      if (doc.scrollTop + doc.clientHeight >= doc.scrollHeight) {
+      if (doc.scrollTop + doc.clientHeight >= 0.9 * doc.scrollHeight) {
         this.loadmore()
       }
     },
