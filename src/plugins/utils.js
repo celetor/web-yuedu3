@@ -14,7 +14,7 @@ export function getImageFromLegado(src, width) {
  * @param {*} fn  是我们需要包装的事件回调
  * @param {*} delay 是每次推迟执行的等待时间
  */
-export function debounce(fn, delay = 1000) {
+export function debounce(fn, delay = 250) {
   // 定时器
   let timer = null;
   // 将debounce处理结果当作函数返回
