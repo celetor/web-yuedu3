@@ -118,6 +118,7 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
+import { debounce } from "../plugins/utils";
 
 export default {
   components: {
@@ -425,12 +426,12 @@ export default {
       }
     },
     //监听页面位置
-    handleScroll() {
+    handleScroll: debounce(function() {
       let doc = document.documentElement;
       if (doc.scrollTop + doc.clientHeight >= 0.9 * doc.scrollHeight) {
         this.loadMore();
       }
-    },
+    }),
     toShelf() {
       this.$router.push("/");
     },
