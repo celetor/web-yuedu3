@@ -339,6 +339,7 @@ export default {
       //let chapterUrl = this.$store.state.readingBook.catalog[index].url;
       let title = this.$store.state.readingBook.catalog[index].title;
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
+      this.saveReadingBookProgress(chapterIndex, title);
       document.title = sessionStorage.getItem("bookName") + " | " + title;
       //强制滚回顶层
       showLoading && jump(this.$refs.top, { duration: 0 });
@@ -392,10 +393,6 @@ export default {
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("下一章");
         this.getContent(index);
-        this.saveReadingBookProgress(
-          index,
-          this.$store.state.readingBook.catalog[index].title
-        );
       } else {
         this.$message.error("本章是最后一章");
       }
@@ -407,10 +404,6 @@ export default {
       if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
         this.$message.info("上一章");
         this.getContent(index);
-        this.saveReadingBookProgress(
-          index,
-          this.$store.state.readingBook.catalog[index].title
-        );
       } else {
         this.$message.error("本章是第一章");
       }
