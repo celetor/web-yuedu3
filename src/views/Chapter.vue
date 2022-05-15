@@ -214,7 +214,8 @@ export default {
     return {
       noPoint: true,
       showToolBar: false,
-      chapterData: []
+      chapterData: [],
+      oldScrollTop: 0
     };
   },
   computed: {
@@ -318,17 +319,21 @@ export default {
     getCatalog(bookUrl) {
       return ajax.get("/getChapterList?url=" + encodeURIComponent(bookUrl));
     },
-    getContent(index, showLoading = true) {
-      //展示进度条
-      showLoading && this.$store.commit("setShowContent", false);
-      if (!this.loading.visible && showLoading) {
-        this.loading = this.$loading({
-          target: this.$refs.content,
-          lock: true,
-          text: "正在获取内容",
-          spinner: "el-icon-loading",
-          background: "rgba(0,0,0,0)"
-        });
+    getContent(index, reloadChapter = true, loadMore = true) {
+      if (reloadChapter) {
+        //展示进度条
+        this.$store.commit("setShowContent", false);
+        if (!this.loading.visible) {
+          this.loading = this.$loading({
+            target: this.$refs.content,
+            lock: true,
+            text: "正在获取内容",
+            spinner: "el-icon-loading",
+            background: "rgba(0,0,0,0)"
+          });
+        }
+        //强制滚回顶层
+        jump(this.$refs.top, { duration: 0 });
       }
       //保存阅读进度
       let bookUrl = sessionStorage.getItem("bookUrl");
@@ -342,8 +347,6 @@ export default {
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
       this.saveReadingBookProgress(chapterIndex, title);
       document.title = sessionStorage.getItem("bookName") + " | " + title;
-      //强制滚回顶层
-      showLoading && jump(this.$refs.top, { duration: 0 });
       let that = this;
       ajax
         .get(
@@ -357,11 +360,19 @@ export default {
             if (res.data.isSuccess) {
               let data = res.data.data;
               let content = data.split(/\n+/);
-              that.chapterData.push({ index, content, title });
+              this.updateChapterData(
+                { index, content, title },
+                reloadChapter,
+                loadMore
+              );
             } else {
               that.$message.error("书源正文解析错误！");
               let content = ["书源正文解析失败！"];
-              that.chapterData.push({ index, content, title });
+              this.updateChapterData(
+                { index, content, title },
+                reloadChapter,
+                loadMore
+              );
             }
             this.$store.commit("setContentLoading", true);
             that.loading.close();
@@ -374,7 +385,11 @@ export default {
           err => {
             that.$message.error("获取章节内容失败");
             let content = ["获取章节内容失败！"];
-            that.chapterData.push({ index, content, title });
+            this.updateChapterData(
+                { index, content, title },
+                reloadChapter,
+                loadMore
+              );
             that.loading.close();
             that.$store.commit("setShowContent", true);
             throw err;
@@ -419,18 +434,44 @@ export default {
         durChapterTitle: title
       });
     },
+    updateChapterData(data, reloadChapter, loadMore) {
+      if (reloadChapter) {
+        this.chapterData.splice(0);
+      }
+      if (loadMore) {
+        this.chapterData.push(data);
+      } else {
+        this.chapterData.unshift(data);
+      }
+    },
     loadMore() {
       let index = this.$store.state.readingBook.index;
       if (this.$store.state.readingBook.catalog.length - 1 > index) {
         this.getContent(index + 1, false);
       }
     },
+    loadBefore() {
+      let index = this.$store.state.readingBook.index;
+      if (0 < index) {
+        this.getContent(index - 1, false, false);
+      }
+    },
     //监听页面位置
     handleScroll: debounce(function() {
       let doc = document.documentElement;
-      if (doc.scrollTop + doc.clientHeight >= 0.9 * doc.scrollHeight) {
+      let scrollTop = doc.scrollTop,
+        clientHeight = doc.clientHeight,
+        scrollHeight = doc.scrollHeight;
+      let offset = scrollTop - this.oldScrollTop;
+      //下滑到底部1/10加载一章
+      if (offset > 0 && scrollTop + clientHeight >= 0.9 * scrollHeight) {
         this.loadMore();
       }
+      //上滑顶部1/10加载上一章
+      if (offset < 0 && scrollTop < 0.1 * scrollHeight) {
+        this.loadBefore();
+      }
+      this.oldScrollTop = scrollTop;
     }),
     toShelf() {
       this.$router.push("/");
