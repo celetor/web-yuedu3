@@ -145,7 +145,7 @@ export default {
     const that = this;
     let bookUrl = sessionStorage.getItem("bookUrl");
     let bookName = sessionStorage.getItem("bookName");
-    let chapterIndex = sessionStorage.getItem("chapterIndex") || 0;
+    let chapterIndex = Number(sessionStorage.getItem("chapterIndex") || 0);
     var book = JSON.parse(localStorage.getItem(bookUrl));
     if (book == null || chapterIndex > 0) {
       book = {
@@ -158,8 +158,7 @@ export default {
 
     this.getCatalog(bookUrl).then(
       res => {
-        let catalog = res.data.data;
-        book.catalog = catalog;
+        book.catalog = res.data.data;
         that.$store.commit("setReadingBook", book);
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
