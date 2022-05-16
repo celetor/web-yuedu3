@@ -432,7 +432,7 @@ export default {
         author: this.$store.state.readingBook.bookAuthor,
         durChapterIndex: index,
         durChapterPos: 0,
-        durChapterTime: new Date().getMilliseconds(),
+        durChapterTime: new Date().getTime(),
         durChapterTitle: title
       });
     },
