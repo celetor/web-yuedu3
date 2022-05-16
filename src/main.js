@@ -17,17 +17,17 @@ new Vue({
 }).$mount("#app");
 
 /**
- *图片懒加载全局配置
-*/
+ * 图片懒加载全局配置
+ */
 Vue.use(VueLazyload, {
   preLoad: 1.3,
   error: require("./assets/imgs/error.png"),
   loading: require("./assets/imgs/loading.gif"),
   attempt: 1,
   adapter: {
-    error({ src, el}) {
+    error({ src, el }) {
       let width = vuex.state.config.readWidth;
-      let image = getImageFromLegado(src, width)
+      let image = getImageFromLegado(src, width);
       if (image != null) {
         el.src = image;
       }

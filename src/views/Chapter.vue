@@ -118,7 +118,7 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
-import { throttle } from "lodash-es"
+import { throttle } from "lodash-es";
 
 export default {
   components: {
@@ -164,7 +164,7 @@ export default {
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
         window.addEventListener("keyup", this.handleKeyPress);
-        window.addEventListener("scroll", this.handleScroll);
+        window.addEventListener("scroll", this.handleScroll, { passive: true });
       },
       err => {
         that.loading.close();
@@ -360,7 +360,7 @@ export default {
             if (res.data.isSuccess) {
               let data = res.data.data;
               let content = data.split(/\n+/);
-              this.updateChapterData(
+              that.updateChapterData(
                 { index, content, title },
                 reloadChapter,
                 loadMore
@@ -368,13 +368,13 @@ export default {
             } else {
               that.$message.error("书源正文解析错误！");
               let content = ["书源正文解析失败！"];
-              this.updateChapterData(
+              that.updateChapterData(
                 { index, content, title },
                 reloadChapter,
                 loadMore
               );
             }
-            this.$store.commit("setContentLoading", true);
+            that.$store.commit("setContentLoading", true);
             that.loading.close();
             that.noPoint = false;
             that.$store.commit("setShowContent", true);
@@ -385,7 +385,7 @@ export default {
           err => {
             that.$message.error("获取章节内容失败");
             let content = ["获取章节内容失败！"];
-            this.updateChapterData(
+            that.updateChapterData(
               { index, content, title },
               reloadChapter,
               loadMore
