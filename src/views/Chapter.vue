@@ -118,7 +118,7 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
-import { debounce } from "../plugins/utils";
+import { throttle } from "lodash-es"
 
 export default {
   components: {
@@ -457,7 +457,7 @@ export default {
       }
     },
     //监听页面位置
-    handleScroll: debounce(function() {
+    handleScroll: throttle(function() {
       let doc = document.documentElement;
       let scrollTop = doc.scrollTop,
         clientHeight = doc.clientHeight,
@@ -472,7 +472,7 @@ export default {
         //this.loadBefore();
       }
       this.oldScrollTop = scrollTop;
-    }),
+    }, 200),
     toShelf() {
       this.$router.push("/");
     },
