@@ -28,6 +28,7 @@
                 toDetail(
                   readingRecent.url,
                   readingRecent.name,
+                  readingRecent.author,
                   readingRecent.chapterIndex
                 )
               "
@@ -69,10 +70,18 @@
             class="book"
             v-for="book in shelf"
             :key="book.noteUrl"
-            @click="toDetail(book.bookUrl, book.name, book.durChapterIndex)"
+            @click="
+              toDetail(
+                book.bookUrl,
+                book.name,
+                book.author,
+                book.durChapterIndex
+              )
+            "
           >
             <div class="cover-img">
-              <img class="cover"
+              <img
+                class="cover"
                 v-lazy="getCover(book.coverUrl)"
                 :key="book.coverUrl"
                 alt=""
@@ -80,7 +89,14 @@
             </div>
             <div
               class="info"
-              @click="toDetail(book.bookUrl, book.name, book.durChapterIndex)"
+              @click="
+                toDetail(
+                  book.bookUrl,
+                  book.name,
+                  book.author,
+                  book.durChapterIndex
+                )
+              "
             >
               <div class="name">{{ book.name }}</div>
               <div class="sub">
@@ -114,6 +130,7 @@ export default {
       search: "",
       readingRecent: {
         name: "尚无阅读记录",
+        author: "",
         url: "",
         chapterIndex: 0
       }
@@ -170,12 +187,14 @@ export default {
   },
   methods: {
     setIP() {},
-    toDetail(bookUrl, bookName, chapterIndex) {
+    toDetail(bookUrl, bookName, bookAuthor, chapterIndex) {
       sessionStorage.setItem("bookUrl", bookUrl);
       sessionStorage.setItem("bookName", bookName);
+      sessionStorage.setItem("bookAuthor", bookAuthor);
       sessionStorage.setItem("chapterIndex", chapterIndex);
       this.readingRecent = {
         name: bookName,
+        author: bookAuthor,
         url: bookUrl,
         chapterIndex: chapterIndex
       };
@@ -502,7 +521,7 @@ export default {
         }
       }
 
-       .bottom-icons {
+      .bottom-icons {
         display: none;
       }
     }

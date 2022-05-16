@@ -146,11 +146,13 @@ export default {
     const that = this;
     let bookUrl = sessionStorage.getItem("bookUrl");
     let bookName = sessionStorage.getItem("bookName");
+    let bookAuthor = sessionStorage.getItem("bookAuthor");
     let chapterIndex = Number(sessionStorage.getItem("chapterIndex") || 0);
     var book = JSON.parse(localStorage.getItem(bookUrl));
     if (book == null || chapterIndex > 0) {
       book = {
         bookName: bookName,
+        bookAuthor: bookAuthor,
         bookUrl: bookUrl,
         index: chapterIndex
       };
@@ -426,11 +428,11 @@ export default {
     },
     saveReadingBookProgress(index, title) {
       ajax.post("/saveBookProgress", {
-        name: this.$store.state.readingBook.name,
-        author: this.$store.state.readingBook.author,
+        name: this.$store.state.readingBook.bookName,
+        author: this.$store.state.readingBook.bookAuthor,
         durChapterIndex: index,
         durChapterPos: 0,
-        durChapterTime: new Date().getMilliseconds(),
+        durChapterTime: new Date().getTime(),
         durChapterTitle: title
       });
     },
