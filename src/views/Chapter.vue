@@ -460,10 +460,12 @@ export default {
     },
     //监听页面位置
     handleScroll: throttle(function() {
+      if (this.loading.visible) return;
+
       let doc = document.documentElement;
       let scrollTop = doc.scrollTop,
         clientHeight = doc.clientHeight,
-        scrollHeight = doc.scrollHeight;
+        scrollHeight = this.$refs.content.scrollHeight;
       let offset = scrollTop - this.oldScrollTop;
       //下滑到底部1/10加载一章
       if (offset > 0 && scrollTop + clientHeight >= 0.9 * scrollHeight) {
