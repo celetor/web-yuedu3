@@ -336,19 +336,12 @@ export default {
         }
         //强制滚回顶层
         jump(this.$refs.top, { duration: 0 });
+        //保存进度
+        this.saveReadingBookProgress(index);
       }
-      //保存阅读进度
       let bookUrl = sessionStorage.getItem("bookUrl");
-      let book = JSON.parse(localStorage.getItem(bookUrl));
-      book.index = index;
-      localStorage.setItem(bookUrl, JSON.stringify(book));
-      this.$store.state.readingBook.index = index;
-      sessionStorage.setItem("chapterIndex", index);
-      //let chapterUrl = this.$store.state.readingBook.catalog[index].url;
       let title = this.$store.state.readingBook.catalog[index].title;
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
-      this.saveReadingBookProgress(chapterIndex, title);
-      document.title = sessionStorage.getItem("bookName") + " | " + title;
       let that = this;
       ajax
         .get(
@@ -426,7 +419,15 @@ export default {
         this.$message.error("本章是第一章");
       }
     },
-    saveReadingBookProgress(index, title) {
+    saveReadingBookProgress(index) {
+      let bookUrl = sessionStorage.getItem("bookUrl");
+      let book = JSON.parse(localStorage.getItem(bookUrl));
+      book.index = index;
+      localStorage.setItem(bookUrl, JSON.stringify(book));
+      this.$store.state.readingBook.index = index;
+      sessionStorage.setItem("chapterIndex", index);
+      let title = this.$store.state.readingBook.catalog[index].title;
+      document.title = sessionStorage.getItem("bookName") + " | " + title;
       ajax.post("/saveBookProgress", {
         name: this.$store.state.readingBook.bookName,
         author: this.$store.state.readingBook.bookAuthor,
