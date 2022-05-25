@@ -229,7 +229,7 @@ export default {
   user-select: none;
   margin: -13px;
   // width: 478px;
-  height: 350px;
+  // height: 350px;
   text-align: left;
   padding: 40px 0 40px 24px;
   background: #ede7da url('../assets/imgs/themes/popup_1.png') repeat;
