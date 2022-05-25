@@ -105,6 +105,7 @@
           <div class="title" ref="title" v-if="show">{{ data.title }}</div>
           <Pcontent :carray="data.content" />
         </div>
+        <div class="loading" ref="loading"></div>
         <div class="bottom-bar" ref="bottom"></div>
       </div>
     </div>
@@ -118,7 +119,6 @@ import Pcontent from "../components/Content.vue";
 import jump from "../plugins/jump";
 import config from "../plugins/config";
 import ajax from "../plugins/ajax";
-import { throttle } from "lodash-es";
 
 export default {
   components: {
@@ -166,7 +166,15 @@ export default {
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
         window.addEventListener("keyup", this.handleKeyPress);
-        window.addEventListener("scroll", this.handleScroll, { passive: true });
+        //监听底部加载
+        this.scrollObserve = new IntersectionObserver(
+          this.handleIScrollObserve
+        );
+        this.scrollObserve.observe(this.$refs.loading);
+        //监听当前阅读章节
+        this.readingObserve = new IntersectionObserver(
+          this.handleIReadingObserve
+        );
       },
       err => {
         that.loading.close();
@@ -177,13 +185,16 @@ export default {
   },
   destroyed() {
     window.removeEventListener("keyup", this.handleKeyPress);
-    window.removeEventListener("scroll", this.handleScroll);
     this.readSettingsVisible = false;
     this.popCataVisible = false;
+    this.scrollObserve && this.scrollObserve.disconnect();
+    this.readingObserve && this.readingObserve.disconnect();
   },
   watch: {
     chapterData() {
       this.$store.commit("setContentLoading", false);
+      //添加章节内容到observe
+      this.addReadingObserve();
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -217,7 +228,8 @@ export default {
       noPoint: true,
       showToolBar: false,
       chapterData: [],
-      oldScrollTop: 0
+      scrollObserve: null,
+      readingObserve: null
     };
   },
   computed: {
@@ -321,7 +333,7 @@ export default {
     getCatalog(bookUrl) {
       return ajax.get("/getChapterList?url=" + encodeURIComponent(bookUrl));
     },
-    getContent(index, reloadChapter = true, loadMore = true) {
+    getContent(index, reloadChapter = true) {
       if (reloadChapter) {
         //展示进度条
         this.$store.commit("setShowContent", false);
@@ -336,19 +348,12 @@ export default {
         }
         //强制滚回顶层
         jump(this.$refs.top, { duration: 0 });
+        //保存进度
+        this.saveReadingBookProgress(index);
       }
-      //保存阅读进度
       let bookUrl = sessionStorage.getItem("bookUrl");
-      let book = JSON.parse(localStorage.getItem(bookUrl));
-      book.index = index;
-      localStorage.setItem(bookUrl, JSON.stringify(book));
-      this.$store.state.readingBook.index = index;
-      sessionStorage.setItem("chapterIndex", index);
-      //let chapterUrl = this.$store.state.readingBook.catalog[index].url;
       let title = this.$store.state.readingBook.catalog[index].title;
       let chapterIndex = this.$store.state.readingBook.catalog[index].index;
-      this.saveReadingBookProgress(chapterIndex, title);
-      document.title = sessionStorage.getItem("bookName") + " | " + title;
       let that = this;
       ajax
         .get(
@@ -362,19 +367,11 @@ export default {
             if (res.data.isSuccess) {
               let data = res.data.data;
               let content = data.split(/\n+/);
-              that.updateChapterData(
-                { index, content, title },
-                reloadChapter,
-                loadMore
-              );
+              that.updateChapterData({ index, content, title }, reloadChapter);
             } else {
               that.$message.error("书源正文解析错误！");
               let content = ["书源正文解析失败！"];
-              that.updateChapterData(
-                { index, content, title },
-                reloadChapter,
-                loadMore
-              );
+              that.updateChapterData({ index, content, title }, reloadChapter);
             }
             that.$store.commit("setContentLoading", true);
             that.loading.close();
@@ -387,11 +384,7 @@ export default {
           err => {
             that.$message.error("获取章节内容失败");
             let content = ["获取章节内容失败！"];
-            that.updateChapterData(
-              { index, content, title },
-              reloadChapter,
-              loadMore
-            );
+            that.updateChapterData({ index, content, title }, reloadChapter);
             that.loading.close();
             that.$store.commit("setShowContent", true);
             throw err;
@@ -426,7 +419,14 @@ export default {
         this.$message.error("本章是第一章");
       }
     },
-    saveReadingBookProgress(index, title) {
+    saveReadingBookProgress(index) {
+      let bookUrl = sessionStorage.getItem("bookUrl");
+      let book = JSON.parse(localStorage.getItem(bookUrl));
+      book.index = index;
+      localStorage.setItem(bookUrl, JSON.stringify(book));
+      this.$store.state.readingBook.index = index;
+      sessionStorage.setItem("chapterIndex", index);
+      let title = this.$store.state.readingBook.catalog[index].title;
       ajax.post("/saveBookProgress", {
         name: this.$store.state.readingBook.bookName,
         author: this.$store.state.readingBook.bookAuthor,
@@ -436,47 +436,18 @@ export default {
         durChapterTitle: title
       });
     },
-    updateChapterData(data, reloadChapter, loadMore) {
+    updateChapterData(data, reloadChapter) {
       if (reloadChapter) {
         this.chapterData.splice(0);
       }
-      if (loadMore) {
-        this.chapterData.push(data);
-      } else {
-        this.chapterData.unshift(data);
-      }
+      this.chapterData.push(data);
     },
     loadMore() {
-      let index = this.$store.state.readingBook.index;
+      let index = this.chapterData.slice(-1)[0].index;
       if (this.$store.state.readingBook.catalog.length - 1 > index) {
         this.getContent(index + 1, false);
       }
     },
-    loadBefore() {
-      let index = this.$store.state.readingBook.index;
-      if (0 < index) {
-        this.getContent(index - 1, false, false);
-      }
-    },
-    //监听页面位置
-    handleScroll: throttle(function() {
-      if (this.loading.visible) return;
-
-      let doc = document.documentElement;
-      let scrollTop = doc.scrollTop,
-        clientHeight = doc.clientHeight,
-        scrollHeight = this.$refs.content.scrollHeight;
-      let offset = scrollTop - this.oldScrollTop;
-      //下滑到底部1/10加载一章
-      if (offset > 0 && scrollTop + clientHeight >= 0.9 * scrollHeight) {
-        if (this.$store.state.config.infiniteLoading) this.loadMore();
-      }
-      //上滑顶部1/10加载上一章
-      if (offset < 0 && scrollTop < 0.1 * scrollHeight) {
-        //this.loadBefore();
-      }
-      this.oldScrollTop = scrollTop;
-    }, 200),
     toShelf() {
       this.$router.push("/");
     },
@@ -516,6 +487,39 @@ export default {
           }
           break;
       }
+    },
+    //IntersectionObserver回调 底部加载
+    handleIScrollObserve(entries) {
+      if (this.loading.visible) return;
+      for (let { isIntersecting } of entries) {
+        if (!isIntersecting) return;
+        if (!this.$store.state.config.infiniteLoading) return;
+        this.loadMore();
+      }
+    },
+    //IntersectionObserver回调 当前阅读章节
+    handleIReadingObserve(entries) {
+      setTimeout(() => {
+        for (let { isIntersecting, target } of entries) {
+          if (!isIntersecting) return;
+          let title = target.querySelector(".title").innerText;
+          document.title = sessionStorage.getItem("bookName") + " | " + title;
+          let catalog = this.$store.state.readingBook.catalog;
+          let chapter = catalog.find(
+            item => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
+          );
+          if (!chapter) return;
+          this.saveReadingBookProgress(chapter.index);
+        }
+      }, 50);
+    },
+    //添加所有章节到observe
+    addReadingObserve() {
+      setTimeout(() => {
+        let chapterElements = this.$refs.chapter;
+        if (!chapterElements) return;
+        chapterElements.forEach(el => this.readingObserve.observe(el));
+      }, 10);
     }
   }
 };
