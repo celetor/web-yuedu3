@@ -469,7 +469,7 @@ export default {
       let offset = scrollTop - this.oldScrollTop;
       //下滑到底部1/10加载一章
       if (offset > 0 && scrollTop + clientHeight >= 0.9 * scrollHeight) {
-        this.loadMore();
+        if (this.$store.state.config.infiniteLoading) this.loadMore();
       }
       //上滑顶部1/10加载上一章
       if (offset < 0 && scrollTop < 0.1 * scrollHeight) {

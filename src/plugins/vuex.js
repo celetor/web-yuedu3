@@ -21,7 +21,8 @@ export default new Vuex.Store({
       readWidth: 800
     },
     miniInterface: false,
-    readSettingsVisible: false
+    readSettingsVisible: false,
+    infiniteLoading: false
   },
   mutations: {
     setConnectStatus(state, connectStatus) {
@@ -59,6 +60,9 @@ export default new Vuex.Store({
     },
     setMiniInterface(state, mini) {
       state.miniInterface = mini;
+    },
+    setInfiniteLoading(state, loading) {
+      state.infiniteLoading = loading;
     }
   }
 });
