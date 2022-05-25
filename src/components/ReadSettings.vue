@@ -56,6 +56,23 @@
             >
           </div>
         </li>
+        <li class="infinite-loading">
+          <i>无限加载</i>
+          <span
+            class="infinite-loading-item"
+            :key="0"
+            :class="{ selected: infiniteLoading == false }"
+            @click="setInfiniteLoading(false)"
+            >关闭</span
+          >
+          <span
+            class="infinite-loading-item"
+            :key="1"
+            :class="{ selected: infiniteLoading == true }"
+            @click="setInfiniteLoading(true)"
+            >开启</span
+          >
+        </li>
       </ul>
     </div>
   </div>
@@ -133,6 +150,9 @@ export default {
     },
     readWidth() {
       return this.$store.state.config.readWidth;
+    },
+    infiniteLoading() {
+      return this.$store.state.config.infiniteLoading;
     }
   },
   methods: {
@@ -181,6 +201,12 @@ export default {
       this.$store.commit("setConfig", config);
       this.uploadConfig();
     },
+    setInfiniteLoading(loading) {
+      let config = this.config;
+      config.infiniteLoading = loading;
+      this.$store.commit("setConfig", config);
+      this.uploadConfig();
+    },
     uploadConfig() {
       ajax.post("/saveReadConfig", this.config);
     }
@@ -203,7 +229,7 @@ export default {
   user-select: none;
   margin: -13px;
   // width: 478px;
-  height: 300px;
+  height: 350px;
   text-align: left;
   padding: 40px 0 40px 24px;
   background: #ede7da url('../assets/imgs/themes/popup_1.png') repeat;
@@ -260,10 +286,10 @@ export default {
         }
       }
 
-      .font-list {
+      .font-list, .infinite-loading {
         margin-top: 28px;
 
-        .font-item {
+        .font-item, .infinite-loading-item {
           width: 78px;
           height: 34px;
           cursor: pointer;
@@ -280,7 +306,7 @@ export default {
           border: 1px solid #ed4259;
         }
 
-        .font-item:hover {
+        .font-item:hover, .infinite-loading-item:hover {
           border: 1px solid #ed4259;
           color: #ed4259;
         }
@@ -344,8 +370,8 @@ export default {
     color: #ed4259;
   }
 
-  >>>.font-list {
-    .font-item {
+  >>>.font-list, .infinite-loading {
+    .font-item, .infinite-loading-item {
       border: 1px solid #666;
       background: rgba(45, 45, 45, 0.5);
     }
@@ -375,8 +401,8 @@ export default {
     color: rgba(255, 255, 255, 0.2);
   }
 
-  >>>.font-list {
-    .font-item {
+  >>>.font-list, .infinite-loading {
+    .font-item, .infinite-loading-item {
       background: rgba(255, 255, 255, 0.5);
       border: 1px solid rgba(0, 0, 0, 0.1);
     }

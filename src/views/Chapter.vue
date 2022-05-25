@@ -493,6 +493,7 @@ export default {
       if (this.loading.visible) return;
       for (let { isIntersecting } of entries) {
         if (!isIntersecting) return;
+        if (!this.$store.state.config.infiniteLoading) return;
         this.loadMore();
       }
     },
