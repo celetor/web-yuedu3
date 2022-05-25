@@ -196,6 +196,9 @@ export default {
       //添加章节内容到observe
       this.addReadingObserve();
     },
+    chapterIndex() {
+      this.saveReadingBookProgress(this.chapterIndex);
+    },
     theme(theme) {
       this.isNight = theme == 6;
     },
@@ -229,7 +232,8 @@ export default {
       showToolBar: false,
       chapterData: [],
       scrollObserve: null,
-      readingObserve: null
+      readingObserve: null,
+      chapterIndex: 0
     };
   },
   computed: {
@@ -427,6 +431,7 @@ export default {
       this.$store.state.readingBook.index = index;
       sessionStorage.setItem("chapterIndex", index);
       let title = this.$store.state.readingBook.catalog[index].title;
+      document.title = sessionStorage.getItem("bookName") + " | " + title;
       ajax.post("/saveBookProgress", {
         name: this.$store.state.readingBook.bookName,
         author: this.$store.state.readingBook.bookAuthor,
@@ -497,19 +502,25 @@ export default {
         this.loadMore();
       }
     },
-    //IntersectionObserver回调 当前阅读章节
+    //IntersectionObserver回调 当前阅读章节序号
     handleIReadingObserve(entries) {
       setTimeout(() => {
-        for (let { isIntersecting, target } of entries) {
-          if (!isIntersecting) return;
+        for (let { isIntersecting, target, boundingClientRect } of entries) {
           let title = target.querySelector(".title").innerText;
-          document.title = sessionStorage.getItem("bookName") + " | " + title;
           let catalog = this.$store.state.readingBook.catalog;
           let chapter = catalog.find(
             item => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
           );
           if (!chapter) return;
-          this.saveReadingBookProgress(chapter.index);
+          if (isIntersecting) {
+            this.chapterIndex = chapter.index;
+          } else {
+            if (boundingClientRect.top < 0) {
+              this.chapterIndex = chapter.index + 1;
+            } else {
+              this.chapterIndex = chapter.index - 1;
+            }
+          }
         }
       }, 50);
     },

@@ -41,6 +41,13 @@ jobs:
           fetch-depth: 0
           path: master
 
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Build Master
         working-directory: master
         run: |
@@ -77,6 +84,13 @@ jobs:
           ref: slave
           fetch-depth: 0
           path: slave
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Build Slave
         working-directory: slave
