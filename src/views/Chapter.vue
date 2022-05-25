@@ -166,8 +166,15 @@ export default {
         var index = that.$store.state.readingBook.index || 0;
         this.getContent(index);
         window.addEventListener("keyup", this.handleKeyPress);
-        this.scrollObserve = new IntersectionObserver(this.handleIScrollObserve);
+        //监听底部加载
+        this.scrollObserve = new IntersectionObserver(
+          this.handleIScrollObserve
+        );
         this.scrollObserve.observe(this.$refs.loading);
+        //监听当前阅读章节
+        this.readingObserve = new IntersectionObserver(
+          this.handleIReadingObserve
+        );
       },
       err => {
         that.loading.close();
@@ -181,10 +188,13 @@ export default {
     this.readSettingsVisible = false;
     this.popCataVisible = false;
     this.scrollObserve && this.scrollObserve.disconnect();
+    this.readingObserve && this.readingObserve.disconnect();
   },
   watch: {
     chapterData() {
       this.$store.commit("setContentLoading", false);
+      //添加章节内容到observe
+      this.addReadingObserve();
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -218,7 +228,8 @@ export default {
       noPoint: true,
       showToolBar: false,
       chapterData: [],
-      scrollObserve: null
+      scrollObserve: null,
+      readingObserve: null
     };
   },
   computed: {
@@ -356,17 +367,11 @@ export default {
             if (res.data.isSuccess) {
               let data = res.data.data;
               let content = data.split(/\n+/);
-              that.updateChapterData(
-                { index, content, title },
-                reloadChapter
-              );
+              that.updateChapterData({ index, content, title }, reloadChapter);
             } else {
               that.$message.error("书源正文解析错误！");
               let content = ["书源正文解析失败！"];
-              that.updateChapterData(
-                { index, content, title },
-                reloadChapter
-              );
+              that.updateChapterData({ index, content, title }, reloadChapter);
             }
             that.$store.commit("setContentLoading", true);
             that.loading.close();
@@ -379,10 +384,7 @@ export default {
           err => {
             that.$message.error("获取章节内容失败");
             let content = ["获取章节内容失败！"];
-            that.updateChapterData(
-              { index, content, title },
-              reloadChapter
-            );
+            that.updateChapterData({ index, content, title }, reloadChapter);
             that.loading.close();
             that.$store.commit("setShowContent", true);
             throw err;
@@ -425,7 +427,6 @@ export default {
       this.$store.state.readingBook.index = index;
       sessionStorage.setItem("chapterIndex", index);
       let title = this.$store.state.readingBook.catalog[index].title;
-      document.title = sessionStorage.getItem("bookName") + " | " + title;
       ajax.post("/saveBookProgress", {
         name: this.$store.state.readingBook.bookName,
         author: this.$store.state.readingBook.bookAuthor,
@@ -446,7 +447,7 @@ export default {
       if (this.$store.state.readingBook.catalog.length - 1 > index) {
         this.getContent(index + 1, false);
       }
-    }, 
+    },
     toShelf() {
       this.$router.push("/");
     },
@@ -494,6 +495,30 @@ export default {
         if (!isIntersecting) return;
         this.loadMore();
       }
+    },
+    //IntersectionObserver回调 当前阅读章节
+    handleIReadingObserve(entries) {
+      setTimeout(() => {
+        for (let { isIntersecting, target } of entries) {
+          if (!isIntersecting) return;
+          let title = target.querySelector(".title").innerText;
+          document.title = sessionStorage.getItem("bookName") + " | " + title;
+          let catalog = this.$store.state.readingBook.catalog;
+          let chapter = catalog.find(
+            item => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
+          );
+          if (!chapter) return;
+          this.saveReadingBookProgress(chapter.index);
+        }
+      }, 50);
+    },
+    //添加所有章节到observe
+    addReadingObserve() {
+      setTimeout(() => {
+        let chapterElements = this.$refs.chapter;
+        if (!chapterElements) return;
+        chapterElements.forEach(el => this.readingObserve.observe(el));
+      }, 10);
     }
   }
 };
