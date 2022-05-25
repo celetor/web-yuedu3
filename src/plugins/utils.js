@@ -3,8 +3,11 @@ export function getImageFromLegado(src, width) {
     return null;
   }
   return (
-    "../../image?path=" + encodeURIComponent(src) +
-    "&url=" + encodeURIComponent(sessionStorage.getItem("bookUrl")) +
-    "&width=" + width
+    "../../image?path=" +
+    encodeURIComponent(src) +
+    "&url=" +
+    encodeURIComponent(sessionStorage.getItem("bookUrl")) +
+    "&width=" +
+    width
   );
 }
