@@ -1,7 +1,7 @@
 /*
 md5.js
 */
-String.prototype.MD5 = function(bit) {
+String.prototype.MD5 = function (bit) {
   var sMessage = this;
   function RotateLeft(lValue, iShiftBits) {
     return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));

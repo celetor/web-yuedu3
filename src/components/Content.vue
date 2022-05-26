@@ -13,7 +13,7 @@ export default {
     if (this.show) {
       return (
         <div>
-          {this.carray.map(a => {
+          {this.carray.map((a) => {
             if (!/<img[^>]*src/.test(a)) {
               return <p style={style} domPropsInnerHTML={a} />;
             }
@@ -34,13 +34,13 @@ export default {
     },
     fontSize() {
       return this.$store.state.config.fontSize + "px";
-    }
+    },
   },
   methods: {
     getImageSrc(content) {
       let imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/;
       return content.match(imgPattern)[1];
-    }
+    },
   },
   watch: {
     fontSize() {
@@ -49,8 +49,8 @@ export default {
       this.$nextTick(() => {
         that.$store.commit("setShowContent", true);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

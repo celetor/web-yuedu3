@@ -132,8 +132,8 @@ export default {
         name: "尚无阅读记录",
         author: "",
         url: "",
-        chapterIndex: 0
-      }
+        chapterIndex: 0,
+      },
     };
   },
   mounted() {
@@ -150,21 +150,21 @@ export default {
       lock: true,
       text: "正在获取书籍信息",
       spinner: "el-icon-loading",
-      background: "rgb(247,247,247)"
+      background: "rgb(247,247,247)",
     });
     const that = this;
     ajax
       .get("/getBookshelf", {
-        timeout: 5000
+        timeout: 5000,
       })
-      .then(function(response) {
+      .then(function (response) {
         that.loading.close();
         that.$store.commit("setConnectType", "success");
         if (response.data.isSuccess) {
           //that.$store.commit("increaseBookNum", response.data.data.length);
           that.$store.commit(
             "addBooks",
-            response.data.data.sort(function(a, b) {
+            response.data.data.sort(function (a, b) {
               var x = a["durChapterTime"] || 0;
               var y = b["durChapterTime"] || 0;
               return y - x;
@@ -176,7 +176,7 @@ export default {
         that.$store.commit("setConnectStatus", "已连接 ");
         that.$store.commit("setNewConnect", false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         that.loading.close();
         that.$store.commit("setConnectType", "danger");
         that.$store.commit("setConnectStatus", "连接失败");
@@ -196,18 +196,18 @@ export default {
         name: bookName,
         author: bookAuthor,
         url: bookUrl,
-        chapterIndex: chapterIndex
+        chapterIndex: chapterIndex,
       };
       localStorage.setItem("readingRecent", JSON.stringify(this.readingRecent));
       this.$router.push({
-        path: "/chapter"
+        path: "/chapter",
       });
     },
     dateFormat(t) {
       let time = new Date().getTime();
       let int = parseInt((time - t) / 1000);
       let str = "";
-      Date.prototype.format = function(fmt) {
+      Date.prototype.format = function (fmt) {
         var o = {
           "M+": this.getMonth() + 1, //月份
           "d+": this.getDate(), //日
@@ -215,7 +215,7 @@ export default {
           "m+": this.getMinutes(), //分
           "s+": this.getSeconds(), //秒
           "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-          S: this.getMilliseconds() //毫秒
+          S: this.getMilliseconds(), //毫秒
         };
         if (/(y+)/.test(fmt)) {
           fmt = fmt.replace(
@@ -258,7 +258,7 @@ export default {
             : "..") +
             "/cover?path=" +
             encodeURIComponent(coverUrl);
-    }
+    },
   },
   computed: {
     shelf() {
@@ -279,13 +279,13 @@ export default {
     navigationClass() {
       return !this.showMenu || (this.showMenu && this.showNavigation)
         ? {
-            display: "block"
+            display: "block",
           }
         : {
-            display: "none"
+            display: "none",
           };
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -92,32 +92,32 @@ export default {
       moonIcon: "",
       themeColors: [
         {
-          background: "rgba(250, 245, 235, 0.8)"
+          background: "rgba(250, 245, 235, 0.8)",
         },
         {
-          background: "rgba(245, 234, 204, 0.8)"
+          background: "rgba(245, 234, 204, 0.8)",
         },
         {
-          background: "rgba(230, 242, 230, 0.8)"
+          background: "rgba(230, 242, 230, 0.8)",
         },
         {
-          background: "rgba(228, 241, 245, 0.8)"
+          background: "rgba(228, 241, 245, 0.8)",
         },
         {
-          background: "rgba(245, 228, 228, 0.8)"
+          background: "rgba(245, 228, 228, 0.8)",
         },
         {
-          background: "rgba(224, 224, 224, 0.8)"
+          background: "rgba(224, 224, 224, 0.8)",
         },
         {
-          background: "rgba(0, 0, 0, 0.5)"
-        }
+          background: "rgba(0, 0, 0, 0.5)",
+        },
       ],
       moonIconStyle: {
         display: "inline",
-        color: "rgba(255,255,255,0.2)"
+        color: "rgba(255,255,255,0.2)",
       },
-      fonts: ["雅黑", "宋体", "楷书"]
+      fonts: ["雅黑", "宋体", "楷书"],
     };
   },
   mounted() {
@@ -136,7 +136,7 @@ export default {
     },
     popupTheme() {
       return {
-        background: config.themes[this.config.theme].popup
+        background: config.themes[this.config.theme].popup,
       };
     },
     selectedTheme() {
@@ -153,7 +153,7 @@ export default {
     },
     infiniteLoading() {
       return this.$store.state.config.infiniteLoading;
-    }
+    },
   },
   methods: {
     setTheme(theme) {
@@ -209,8 +209,8 @@ export default {
     },
     uploadConfig() {
       ajax.post("/saveReadConfig", this.config);
-    }
-  }
+    },
+  },
 };
 </script>
 
