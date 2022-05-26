@@ -22,9 +22,7 @@
             :class="{ 'no-point': noPoint }"
             slot="reference"
           >
-            <div class="iconfont">
-              &#58905;
-            </div>
+            <div class="iconfont">&#58905;</div>
             <div class="icon-text">目录</div>
           </div>
         </el-popover>
@@ -43,22 +41,16 @@
             :class="{ 'no-point': noPoint }"
             slot="reference"
           >
-            <div class="iconfont">
-              &#58971;
-            </div>
+            <div class="iconfont">&#58971;</div>
             <div class="icon-text">设置</div>
           </div>
         </el-popover>
         <div class="tool-icon" @click="toShelf">
-          <div class="iconfont">
-            &#58892;
-          </div>
+          <div class="iconfont">&#58892;</div>
           <div class="icon-text">书架</div>
         </div>
         <div class="tool-icon" :class="{ 'no-point': noPoint }" @click="toTop">
-          <div class="iconfont">
-            &#58914;
-          </div>
+          <div class="iconfont">&#58914;</div>
           <div class="icon-text">顶部</div>
         </div>
         <div
@@ -66,9 +58,7 @@
           :class="{ 'no-point': noPoint }"
           @click="toBottom"
         >
-          <div class="iconfont">
-            &#58915;
-          </div>
+          <div class="iconfont">&#58915;</div>
           <div class="icon-text">底部</div>
         </div>
       </div>
@@ -80,9 +70,7 @@
           :class="{ 'no-point': noPoint }"
           @click="toPreChapter"
         >
-          <div class="iconfont">
-            &#58920;
-          </div>
+          <div class="iconfont">&#58920;</div>
           <span v-if="$store.state.miniInterface">上一章</span>
         </div>
         <div
@@ -91,9 +79,7 @@
           @click="toNextChapter"
         >
           <span v-if="$store.state.miniInterface">下一章</span>
-          <div class="iconfont">
-            &#58913;
-          </div>
+          <div class="iconfont">&#58913;</div>
         </div>
       </div>
     </div>
@@ -124,7 +110,7 @@ export default {
   components: {
     PopCata,
     Pcontent,
-    ReadSettings
+    ReadSettings,
   },
   created() {
     var config = JSON.parse(localStorage.getItem("config"));
@@ -140,7 +126,7 @@ export default {
       lock: true,
       text: "正在获取内容",
       spinner: "el-icon-loading",
-      background: "rgba(0,0,0,0)"
+      background: "rgba(0,0,0,0)",
     });
     //获取书籍数据
     const that = this;
@@ -154,13 +140,13 @@ export default {
         bookName: bookName,
         bookAuthor: bookAuthor,
         bookUrl: bookUrl,
-        index: chapterIndex
+        index: chapterIndex,
       };
       localStorage.setItem(bookUrl, JSON.stringify(book));
     }
 
     this.getCatalog(bookUrl).then(
-      res => {
+      (res) => {
         book.catalog = res.data.data;
         that.$store.commit("setReadingBook", book);
         var index = that.$store.state.readingBook.index || 0;
@@ -178,7 +164,7 @@ export default {
           this.handleIReadingObserve
         );
       },
-      err => {
+      (err) => {
         that.loading.close();
         that.$message.error("获取书籍目录失败");
         throw err;
@@ -233,7 +219,7 @@ export default {
       } else {
         this.scrollObserve.observe(this.$refs.loading);
       }
-    }
+    },
   },
   data() {
     return {
@@ -242,7 +228,7 @@ export default {
       chapterData: [],
       scrollObserve: null,
       readingObserve: null,
-      chapterIndex: 0
+      chapterIndex: 0,
     };
   },
   computed: {
@@ -261,7 +247,7 @@ export default {
       },
       set(value) {
         this.$store.commit("setPopCataVisible", value);
-      }
+      },
     },
     readSettingsVisible: {
       get() {
@@ -269,7 +255,7 @@ export default {
       },
       set(value) {
         this.$store.commit("setReadSettingsVisible", value);
-      }
+      },
     },
     config() {
       return this.$store.state.config;
@@ -305,13 +291,13 @@ export default {
     },
     bodyTheme() {
       return {
-        background: config.themes[this.$store.state.config.theme].body
+        background: config.themes[this.$store.state.config.theme].body,
       };
     },
     chapterTheme() {
       return {
         background: config.themes[this.$store.state.config.theme].content,
-        width: this.readWidth
+        width: this.readWidth,
       };
     },
     leftBarTheme() {
@@ -323,7 +309,7 @@ export default {
         display:
           this.$store.state.miniInterface && !this.showToolBar
             ? "none"
-            : "block"
+            : "block",
       };
     },
     rightBarTheme() {
@@ -335,7 +321,7 @@ export default {
         display:
           this.$store.state.miniInterface && !this.showToolBar
             ? "none"
-            : "block"
+            : "block",
       };
     },
     show() {
@@ -343,7 +329,7 @@ export default {
     },
     enableInfiniteLoading() {
       return this.$store.state.config.infiniteLoading;
-    }
+    },
   },
   methods: {
     getCatalog(bookUrl) {
@@ -359,7 +345,7 @@ export default {
             lock: true,
             text: "正在获取内容",
             spinner: "el-icon-loading",
-            background: "rgba(0,0,0,0)"
+            background: "rgba(0,0,0,0)",
           });
         }
         //强制滚回顶层
@@ -379,7 +365,7 @@ export default {
             chapterIndex
         )
         .then(
-          res => {
+          (res) => {
             if (res.data.isSuccess) {
               let data = res.data.data;
               let content = data.split(/\n+/);
@@ -397,7 +383,7 @@ export default {
               throw res.data;
             }
           },
-          err => {
+          (err) => {
             that.$message.error("获取章节内容失败");
             let content = ["获取章节内容失败！"];
             that.updateChapterData({ index, content, title }, reloadChapter);
@@ -450,7 +436,7 @@ export default {
         durChapterIndex: index,
         durChapterPos: 0,
         durChapterTime: new Date().getTime(),
-        durChapterTitle: title
+        durChapterTitle: title,
       });
     },
     updateChapterData(data, reloadChapter) {
@@ -520,7 +506,7 @@ export default {
           let title = target.querySelector(".title").innerText;
           let catalog = this.$store.state.readingBook.catalog;
           let chapter = catalog.find(
-            item => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
+            (item) => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
           );
           if (!chapter) return;
           if (isIntersecting) {
@@ -540,10 +526,10 @@ export default {
       setTimeout(() => {
         let chapterElements = this.$refs.chapter;
         if (!chapterElements) return;
-        chapterElements.forEach(el => this.readingObserve.observe(el));
+        chapterElements.forEach((el) => this.readingObserve.observe(el));
       }, 10);
-    }
-  }
+    },
+  },
 };
 </script>
 

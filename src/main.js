@@ -13,7 +13,7 @@ Vue.config.productionTip = false;
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");
 
 /**
@@ -31,14 +31,14 @@ Vue.use(VueLazyload, {
       if (image != null) {
         el.src = image;
       }
-    }
-  }
+    },
+  },
 });
 
 /**
  * 加载配置
  */
-ajax.get("/getReadConfig").then(res => {
+ajax.get("/getReadConfig").then((res) => {
   var data = res.data.data;
   if (data) {
     var config = JSON.parse(data);

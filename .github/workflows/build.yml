@@ -1,4 +1,4 @@
-name: Build Master
+name: Build
 
 on: [workflow_dispatch, push]
 
@@ -11,9 +11,7 @@ jobs:
       - name: Checkout legado_web_bookshelf Project
         uses: actions/checkout@v2
         with:
-          ref: master
           fetch-depth: 0
-          path: master
 
       - uses: actions/cache@v3
         with:
@@ -22,13 +20,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Build Master
-        working-directory: master
+      - name: Install Project
         run: |
           npm install
+
+      - name: Format code
+        if: ${{ github.actor == 'gedoor' }}
+        run: |
+          npm run-script lint
+
+      - name: push changes
+        if: ${{ github.actor == 'gedoor' }}
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: 'style: format code'
+          file_pattern: src
+
+      - name: Build
+        run: |
           npm run-script build
 
       - name: Set Env
+        if: ${{ github.actor == 'gedoor' }}
         shell: bash
         run: |
           version="v$(date -d "8 hour" -u +3.%y.%m%d%H)"
@@ -41,7 +54,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git clone "https://${{ github.actor }}:${{ secrets.ACTIONS_TOKEN }}@github.com/${{ github.actor }}/legado" --depth 1
           rm -rf legado/app/src/main/assets/web/bookshelf/*
-          mv -f $GITHUB_WORKSPACE/master/dist/* legado/app/src/main/assets/web/bookshelf/
+          mv -f $GITHUB_WORKSPACE/dist/* legado/app/src/main/assets/web/bookshelf/
           cd legado
           git add -A
           git commit -m "web bookshelf: ${{ env.APP_VER }}"

@@ -13,7 +13,7 @@ export default {
     window.onresize = () => {
       this.$store.commit("setMiniInterface", window.innerWidth < 750);
     };
-  }
+  },
 };
 </script>
 

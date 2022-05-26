@@ -11,7 +11,7 @@ import {
   Popover,
   Loading,
   Input,
-  Tag
+  Tag,
 } from "element-ui";
 
 Vue.use(Button);

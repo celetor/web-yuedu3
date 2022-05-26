@@ -18,11 +18,11 @@ export default new Vuex.Store({
       theme: 0,
       font: 0,
       fontSize: 18,
-      readWidth: 800
+      readWidth: 800,
     },
     miniInterface: false,
     readSettingsVisible: false,
-    infiniteLoading: false
+    infiniteLoading: false,
   },
   mutations: {
     setConnectStatus(state, connectStatus) {
@@ -63,6 +63,6 @@ export default new Vuex.Store({
     },
     setInfiniteLoading(state, loading) {
       state.infiniteLoading = loading;
-    }
-  }
+    },
+  },
 });
