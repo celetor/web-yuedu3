@@ -20,9 +20,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Build
+      - name: Install Project
         run: |
           npm install
+
+      - name: Format code
+        run: |
+          npm run-script lint
+
+      - name: push changes
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: 'style: format code'
+          file_pattern: src
+
+      - name: Build
+        run: |
           npm run-script build
 
       - name: Set Env
