@@ -25,10 +25,12 @@ jobs:
           npm install
 
       - name: Format code
+        if: ${{ github.actor == 'gedoor' }}
         run: |
           npm run-script lint
 
       - name: push changes
+        if: ${{ github.actor == 'gedoor' }}
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           commit_message: 'style: format code'
@@ -39,6 +41,7 @@ jobs:
           npm run-script build
 
       - name: Set Env
+        if: ${{ github.actor == 'gedoor' }}
         shell: bash
         run: |
           version="v$(date -d "8 hour" -u +3.%y.%m%d%H)"
