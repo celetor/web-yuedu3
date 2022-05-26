@@ -168,9 +168,11 @@ export default {
         window.addEventListener("keyup", this.handleKeyPress);
         //监听底部加载
         this.scrollObserve = new IntersectionObserver(
-          this.handleIScrollObserve
+          this.handleIScrollObserve,
+          { rootMargin: "-100% 0% 20% 0%" }
         );
-        this.scrollObserve.observe(this.$refs.loading);
+        this.enableInfiniteLoading &&
+          this.scrollObserve.observe(this.$refs.loading);
         //监听当前阅读章节
         this.readingObserve = new IntersectionObserver(
           this.handleIReadingObserve
@@ -196,8 +198,8 @@ export default {
       //添加章节内容到observe
       this.addReadingObserve();
     },
-    chapterIndex() {
-      this.saveReadingBookProgress(this.chapterIndex);
+    chapterIndex(index) {
+      this.saveReadingBookProgress(index);
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -223,6 +225,13 @@ export default {
       if (!visible) {
         let configText = JSON.stringify(this.$store.state.config);
         localStorage.setItem("config", configText);
+      }
+    },
+    enableInfiniteLoading(enable) {
+      if (!enable) {
+        this.scrollObserve.disconnect();
+      } else {
+        this.scrollObserve.observe(this.$refs.loading);
       }
     }
   },
@@ -331,6 +340,9 @@ export default {
     },
     show() {
       return this.$store.state.showContent;
+    },
+    enableInfiniteLoading() {
+      return this.$store.state.config.infiniteLoading;
     }
   },
   methods: {
@@ -498,7 +510,6 @@ export default {
       if (this.loading.visible) return;
       for (let { isIntersecting } of entries) {
         if (!isIntersecting) return;
-        if (!this.$store.state.config.infiniteLoading) return;
         this.loadMore();
       }
     },
