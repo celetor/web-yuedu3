@@ -168,47 +168,45 @@ export default {
       }
       let config = this.config;
       config.theme = theme;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
     setFont(font) {
       let config = this.config;
       config.font = font;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
     moreFontSize() {
       let config = this.config;
       if (config.fontSize < 48) config.fontSize += 2;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
     lessFontSize() {
       let config = this.config;
       if (config.fontSize > 12) config.fontSize -= 2;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
     moreReadWidth() {
       let config = this.config;
       if (config.readWidth < 960) config.readWidth += 160;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
     lessReadWidth() {
       let config = this.config;
       if (config.readWidth > 640) config.readWidth -= 160;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
     setInfiniteLoading(loading) {
       let config = this.config;
       config.infiniteLoading = loading;
-      this.$store.commit("setConfig", config);
-      this.uploadConfig();
+      this.saveConfig(config);
     },
-    uploadConfig() {
-      ajax.post("/saveReadConfig", this.config);
+    saveConfig(config) {
+      this.$store.commit("setConfig", config);
+      localStorage.setItem("config", JSON.stringify(config));
+      this.uploadConfig(config);
+    },
+    uploadConfig(config) {
+      ajax.post("/saveReadConfig", config);
     },
   },
 };
