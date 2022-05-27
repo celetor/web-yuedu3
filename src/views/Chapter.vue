@@ -208,10 +208,12 @@ export default {
       this.rightBarTheme.background = color;
     },
     readSettingsVisible(visible) {
+      /*
       if (!visible) {
         let configText = JSON.stringify(this.$store.state.config);
         localStorage.setItem("config", configText);
       }
+      */
     },
     enableInfiniteLoading(enable) {
       if (!enable) {
