@@ -19,7 +19,7 @@ export default new Vuex.Store({
       font: 0,
       fontSize: 18,
       readWidth: 800,
-      infiniteLoading: false
+      infiniteLoading: false,
     },
     miniInterface: false,
     readSettingsVisible: false,
