@@ -188,6 +188,7 @@ export default {
     },
     setCustomFont() {
       let config = this.config;
+      config.font = -1;
       config.customFontName = this.customFontName;
       this.saveConfig(config);
     },
