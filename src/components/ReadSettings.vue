@@ -31,6 +31,16 @@
             @click="setFont(index)"
             >{{ font }}</span
           >
+          <span><input 
+            type="text" 
+            class="font-item"
+            v-model="customFontName"  
+            placeholder="自定义字体"/></span>
+          <span
+            type="text" 
+            class="font-item"
+            @click="setCustomFont" 
+          >保存</span>
         </li>
         <li class="font-size">
           <i>字体大小</i>
@@ -118,6 +128,7 @@ export default {
         color: "rgba(255,255,255,0.2)",
       },
       fonts: ["雅黑", "宋体", "楷书"],
+      customFontName: "",
     };
   },
   mounted() {
@@ -173,6 +184,11 @@ export default {
     setFont(font) {
       let config = this.config;
       config.font = font;
+      this.saveConfig(config);
+    },
+    setCustomFont() {
+      let config = this.config;
+      config.customFontName = this.customFontName;
       this.saveConfig(config);
     },
     moreFontSize() {
