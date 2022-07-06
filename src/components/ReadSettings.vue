@@ -31,16 +31,38 @@
             @click="setFont(index)"
             >{{ font }}</span
           >
-          <span><input 
-            type="text" 
-            class="font-item"
-            v-model="customFontName"  
-            placeholder="自定义字体"/></span>
-          <span
-            type="text" 
-            class="font-item"
-            @click="setCustomFont" 
-          >保存</span>
+        </li>
+        <li class="font-list">
+          <i>自定字体</i>
+          <el-tooltip 
+            effect="dark" 
+            content="自定义的字体名称" 
+            placement="top">
+              <input 
+                type="text" 
+                class="font-item font-item-input"
+                v-model="customFontName"  
+                placeholder="请输入自定义的字体名称"/>
+          </el-tooltip>
+        
+          <el-popover
+            placement="top"
+            width="180"
+            v-model="customFontSavePopVisible"
+            >
+            <p>请确认输入的字体名称完整无误，并且该字体已经安装在您的设备上。
+            </p>
+            <p>确定保存吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="customFontSavePopVisible = false">取消</el-button>
+              <el-button type="primary" size="mini" @click="setCustomFont();customFontSavePopVisible = false">确定</el-button>
+            </div>
+            <span
+              type="text" 
+              class="font-item"
+              slot="reference"
+            >保存</span>
+          </el-popover>
         </li>
         <li class="font-size">
           <i>字体大小</i>
@@ -128,7 +150,8 @@ export default {
         color: "rgba(255,255,255,0.2)",
       },
       fonts: ["雅黑", "宋体", "楷书"],
-      customFontName: "",
+      customFontName: this.$store.state.config.customFontName,
+      customFontSavePopVisible: false,
     };
   },
   mounted() {
@@ -304,7 +327,7 @@ export default {
       .font-list, .infinite-loading {
         margin-top: 28px;
 
-        .font-item, .infinite-loading-item {
+         .font-item, .infinite-loading-item,{
           width: 78px;
           height: 34px;
           cursor: pointer;
@@ -315,7 +338,10 @@ export default {
           display: inline-block;
           font: 14px / 34px PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', 'Microsoft YaHei', sans-serif;
         }
-
+        .font-item-input{
+           width: 168px;
+           color: #000000;
+        }
         .selected {
           color: #ed4259;
           border: 1px solid #ed4259;

@@ -30,7 +30,6 @@ export default {
       return this.$store.state.showContent;
     },
     fontFamily() {
-      console.log(this.$store.state.config.font); 
       if(this.$store.state.config.font >= 0){
         return config.fonts[this.$store.state.config.font];
       }
