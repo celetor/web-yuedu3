@@ -34,34 +34,42 @@
         </li>
         <li class="font-list">
           <i>自定字体</i>
-          <el-tooltip 
-            effect="dark" 
-            content="自定义的字体名称" 
-            placement="top">
-              <input 
-                type="text" 
-                class="font-item font-item-input"
-                v-model="customFontName"  
-                placeholder="请输入自定义的字体名称"/>
+          <el-tooltip effect="dark" content="自定义的字体名称" placement="top">
+            <input
+              type="text"
+              class="font-item font-item-input"
+              v-model="customFontName"
+              placeholder="请输入自定义的字体名称"
+            />
           </el-tooltip>
-        
+
           <el-popover
             placement="top"
             width="180"
             v-model="customFontSavePopVisible"
-            >
-            <p>请确认输入的字体名称完整无误，并且该字体已经安装在您的设备上。
+          >
+            <p>
+              请确认输入的字体名称完整无误，并且该字体已经安装在您的设备上。
             </p>
             <p>确定保存吗？</p>
             <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="text" @click="customFontSavePopVisible = false">取消</el-button>
-              <el-button type="primary" size="mini" @click="setCustomFont();customFontSavePopVisible = false">确定</el-button>
+              <el-button
+                size="mini"
+                type="text"
+                @click="customFontSavePopVisible = false"
+                >取消</el-button
+              >
+              <el-button
+                type="primary"
+                size="mini"
+                @click="
+                  setCustomFont();
+                  customFontSavePopVisible = false;
+                "
+                >确定</el-button
+              >
             </div>
-            <span
-              type="text" 
-              class="font-item"
-              slot="reference"
-            >保存</span>
+            <span type="text" class="font-item" slot="reference">保存</span>
           </el-popover>
         </li>
         <li class="font-size">

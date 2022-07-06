@@ -30,7 +30,7 @@ export default {
       return this.$store.state.showContent;
     },
     fontFamily() {
-      if(this.$store.state.config.font >= 0){
+      if (this.$store.state.config.font >= 0) {
         return config.fonts[this.$store.state.config.font];
       }
       return { fontFamily: this.$store.state.config.customFontName };
