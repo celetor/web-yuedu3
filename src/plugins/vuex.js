@@ -18,9 +18,11 @@ export default new Vuex.Store({
       theme: 0,
       font: 0,
       fontSize: 18,
-      readWidth: 800
+      readWidth: 800,
+      infiniteLoading: false,
     },
-    readSettingsVisible: false
+    miniInterface: false,
+    readSettingsVisible: false,
   },
   mutations: {
     setConnectStatus(state, connectStatus) {
@@ -55,6 +57,9 @@ export default new Vuex.Store({
     },
     setShowContent(state, visible) {
       state.showContent = visible;
-    }
-  }
+    },
+    setMiniInterface(state, mini) {
+      state.miniInterface = mini;
+    },
+  },
 });

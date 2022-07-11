@@ -13,8 +13,11 @@ export default {
     if (this.show) {
       return (
         <div>
-          {this.carray.map(a => {
-            return <p style={style} domPropsInnerHTML={a} />;
+          {this.carray.map((a) => {
+            if (!/<img[^>]*src/.test(a)) {
+              return <p style={style} domPropsInnerHTML={a} />;
+            }
+            return <img v-lazy={this.getImageSrc(a)} />;
           })}
         </div>
       );
@@ -27,11 +30,20 @@ export default {
       return this.$store.state.showContent;
     },
     fontFamily() {
-      return config.fonts[this.$store.state.config.font];
+      if (this.$store.state.config.font >= 0) {
+        return config.fonts[this.$store.state.config.font];
+      }
+      return { fontFamily: this.$store.state.config.customFontName };
     },
     fontSize() {
       return this.$store.state.config.fontSize + "px";
-    }
+    },
+  },
+  methods: {
+    getImageSrc(content) {
+      let imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/;
+      return content.match(imgPattern)[1];
+    },
   },
   watch: {
     fontSize() {
@@ -40,8 +52,8 @@ export default {
       this.$nextTick(() => {
         that.$store.commit("setShowContent", true);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -50,5 +62,11 @@ p {
   display: block;
   word-wrap: break-word;
   word-break: break-all;
+}
+img {
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+  width:100%;
 }
 </style>

@@ -21,50 +21,50 @@ var settings = {
     {
       body: "#ede7da url(" + body_0 + ") repeat",
       content: "#ede7da url(" + content_0 + ") repeat",
-      popup: "#ede7da url(" + popup_0 + ") repeat"
+      popup: "#ede7da url(" + popup_0 + ") repeat",
     },
     {
       body: "#ede7da url(" + body_1 + ") repeat",
       content: "#ede7da url(" + content_1 + ") repeat",
-      popup: "#ede7da url(" + popup_1 + ") repeat"
+      popup: "#ede7da url(" + popup_1 + ") repeat",
     },
     {
       body: "#ede7da url(" + body_2 + ") repeat",
       content: "#ede7da url(" + content_2 + ") repeat",
-      popup: "#ede7da url(" + popup_2 + ") repeat"
+      popup: "#ede7da url(" + popup_2 + ") repeat",
     },
     {
       body: "#ede7da url(" + body_3 + ") repeat",
       content: "#ede7da url(" + content_3 + ") repeat",
-      popup: "#ede7da url(" + popup_3 + ") repeat"
+      popup: "#ede7da url(" + popup_3 + ") repeat",
     },
     {
       body: "#ebcece repeat",
       content: "#f5e4e4 repeat",
-      popup: "#faeceb repeat"
+      popup: "#faeceb repeat",
     },
     {
       body: "#ede7da url(" + body_5 + ") repeat",
       content: "#ede7da url(" + content_5 + ") repeat",
-      popup: "#ede7da url(" + popup_5 + ") repeat"
+      popup: "#ede7da url(" + popup_5 + ") repeat",
     },
     {
       body: "#ede7da url(" + body_6 + ") repeat",
       content: "#ede7da url(" + content_6 + ") repeat",
-      popup: "#ede7da url(" + popup_6 + ") repeat"
-    }
+      popup: "#ede7da url(" + popup_6 + ") repeat",
+    },
   ],
   fonts: [
     {
       fontFamily:
-        "Microsoft YaHei, PingFangSC-Regular, HelveticaNeue-Light, Helvetica Neue Light, sans-serif"
+        "Microsoft YaHei, PingFangSC-Regular, HelveticaNeue-Light, Helvetica Neue Light, sans-serif",
     },
     {
-      fontFamily: "PingFangSC-Regular, -apple-system, Simsun"
+      fontFamily: "PingFangSC-Regular, -apple-system, Simsun",
     },
     {
-      fontFamily: "Kaiti"
-    }
-  ]
+      fontFamily: "Kaiti",
+    },
+  ],
 };
 export default settings;
