@@ -88,7 +88,9 @@
       <div class="content">
         <div class="top-bar" ref="top"></div>
         <div v-for="data in chapterData" :key="data.index" ref="chapter">
-          <div class="title" ref="title" :index="data.index" v-if="show">{{ data.title }}</div>
+          <div class="title" ref="title" :index="data.index" v-if="show">
+            {{ data.title }}
+          </div>
           <Pcontent :carray="data.content" />
         </div>
         <div class="loading" ref="loading"></div>
