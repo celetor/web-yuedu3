@@ -88,7 +88,7 @@
       <div class="content">
         <div class="top-bar" ref="top"></div>
         <div v-for="data in chapterData" :key="data.index" ref="chapter">
-          <div class="title" ref="title" v-if="show">{{ data.title }}</div>
+          <div class="title" ref="title" :index="data.index" v-if="show">{{ data.title }}</div>
           <Pcontent :carray="data.content" />
         </div>
         <div class="loading" ref="loading"></div>
@@ -505,19 +505,21 @@ export default {
     handleIReadingObserve(entries) {
       setTimeout(() => {
         for (let { isIntersecting, target, boundingClientRect } of entries) {
-          let title = target.querySelector(".title").innerText;
+          let titleElement = target.querySelector(".title");
+          let title = titleElement.innerText;
+          let chapterTitleIndex = parseInt(titleElement.getAttribute("index"));
           let catalog = this.$store.state.readingBook.catalog;
           let chapter = catalog.find(
             (item) => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
           );
           if (!chapter) return;
           if (isIntersecting) {
-            this.chapterIndex = chapter.index;
+            this.chapterIndex = chapterTitleIndex;
           } else {
             if (boundingClientRect.top < 0) {
-              this.chapterIndex = chapter.index + 1;
+              this.chapterIndex = chapterTitleIndex + 1;
             } else {
-              this.chapterIndex = chapter.index - 1;
+              this.chapterIndex = chapterTitleIndex - 1;
             }
           }
         }
