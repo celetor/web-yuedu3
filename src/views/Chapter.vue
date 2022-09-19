@@ -508,13 +508,7 @@ export default {
       setTimeout(() => {
         for (let { isIntersecting, target, boundingClientRect } of entries) {
           let titleElement = target.querySelector(".title");
-          let title = titleElement.innerText;
           let chapterTitleIndex = parseInt(titleElement.getAttribute("index"));
-          let catalog = this.$store.state.readingBook.catalog;
-          let chapter = catalog.find(
-            (item) => item.title.replace(/\s/g, "") === title.replace(/\s/g, "")
-          );
-          if (!chapter) return;
           if (isIntersecting) {
             this.chapterIndex = chapterTitleIndex;
           } else {
