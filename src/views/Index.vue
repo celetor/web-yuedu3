@@ -10,7 +10,7 @@
       <div class="search-wrapper">
         <el-input
           size="mini"
-          placeholder="搜索书籍"
+          placeholder="搜索书架书籍"
           v-model="search"
           class="search-input"
         >
@@ -262,7 +262,12 @@ export default {
   },
   computed: {
     shelf() {
-      return this.$store.state.shelf;
+      let shelf = this.$store.state.shelf;
+      return shelf.filter(book => {
+        if (this.search == "") return true
+        book.name.includes(this.search) ||
+        book.author.includes(this.search)
+      });
     },
     connectStatus() {
       return this.$store.state.connectStatus;
