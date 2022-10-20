@@ -9,3 +9,7 @@ updates:
       - dependency-name: "eslint*"
       - dependency-name: "@vue/*"
       - dependency-name: "vue/*"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: "daily"
