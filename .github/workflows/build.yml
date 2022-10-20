@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout legado_web_bookshelf Project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -48,6 +48,7 @@ jobs:
           echo "APP_VER=$version" >> $GITHUB_ENV
 
       - name: Push changes to legado
+        continue-on-error: true
         # if: ${{ github.actor == 'gedoor' }}
         run: |
           git config --global user.name "github-actions[bot]"
