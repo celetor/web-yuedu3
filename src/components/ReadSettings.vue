@@ -235,7 +235,8 @@ export default {
     },
     moreReadWidth() {
       let config = this.config;
-      if (config.readWidth < 960) config.readWidth += 160;
+      /*if (config.readWidth < 960)*/
+      config.readWidth += 160;
       this.saveConfig(config);
     },
     lessReadWidth() {
