@@ -1,6 +1,6 @@
 <script>
 import config from "../plugins/config";
-import { getImageFromLegado } from "./plugins/utils";
+import { getImageFromLegado } from "../plugins/utils";
 
 export default {
   name: "pcontent",
