@@ -24,19 +24,9 @@ Vue.use(VueLazyload, {
   error: require("./assets/imgs/error.png"),
   loading: require("./assets/imgs/loading.gif"),
   attempt: 1,
-  filter: {
-     //判断链接是否含有Urloption ,{...}
-     dynamicReplace(listener, _) {
-       const { src } = listener;
-       listener.src = /,\s*\{.*\}$/.test(src) ? getImageFromLegado(src) : src;
-     }
-  },
   adapter: {
     error({ src, el }) {
-      let image = getImageFromLegado(src);
-      if (image != null) {
-        el.src = image;
-      }
+      el.src = getImageFromLegado(src);
     },
   },
 });
