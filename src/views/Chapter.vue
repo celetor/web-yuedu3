@@ -153,7 +153,7 @@ export default {
       (res) => {
         book.catalog = res.data.data;
         that.$store.commit("setReadingBook", book);
-        var index = that.$store.state.readingBook.index || 0;
+        var index = that.chapterIndex;
         this.getContent(index, true, chapterPos);
         window.addEventListener("keyup", this.handleKeyPress);
         //监听底部加载
@@ -180,15 +180,16 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.computeChapterPos();
-    this.saveReadingBookProgress(this.chapterIndex);
-    next();
+    this.saveReadingBookProgress(this.chapterIndex).finally(_ =>
+      next();
+    );
   },
   destroyed() {
     window.removeEventListener("keyup", this.handleKeyPress);
     this.readSettingsVisible = false;
     this.popCataVisible = false;
-    this.scrollObserve && this.scrollObserve.disconnect();
-    this.readingObserve && this.readingObserve.disconnect();
+    this.scrollObserve?.disconnect();
+    this.readingObserve?.disconnect();
   },
   watch: {
     chapterData() {
@@ -197,7 +198,7 @@ export default {
       this.addReadingObserve();
     },
     chapterIndex(index) {
-      document.title = sessionStorage.getItem("bookName") + " | " + this.$store.state.readingBook.catalog[index].title;
+      document.title = sessionStorage.getItem("bookName") + " | " + this.catalog[index].title;
       //this.saveReadingBookProgress(index);
     },
     theme(theme) {
@@ -243,13 +244,27 @@ export default {
       chapterData: [],
       scrollObserve: null,
       readingObserve: null,
-      chapterIndex: null,
-      chapterPos: null,
     };
   },
   computed: {
+    chapterIndex: {
+      get() {
+        return this.$store.state.readingBook.index || 0;
+      },
+      set(value) {
+        this.$store.state.readingBook.index = value;
+      }
+    },
+    chapterPos: {
+      get() {
+        return this.$store.state.readingBook.chapterPos || 0;
+      },
+      set(value) {
+        this.$store.state.readingBook.chapterPos = value;
+      }
+    },
     catalog() {
-      return this.$store.state.catalog;
+      return this.$store.state.readingBook.catalog;
     },
     windowHeight() {
       return window.innerHeight;
@@ -368,12 +383,10 @@ export default {
         jump(this.$refs.top, { duration: 0 });
         //保存进度
         //this.saveReadingBookProgress(index, chapterPos);
-        this.chapterPos = chapterPos;
-        this.chapterIndex = index;
       }
       let bookUrl = sessionStorage.getItem("bookUrl");
-      let title = this.$store.state.readingBook.catalog[index].title;
-      let chapterIndex = this.$store.state.readingBook.catalog[index].index;
+      let title = this.catalog[index].title;
+      let chapterIndex = this.catalog[index].index;
       let that = this;
       ajax
         .get(
@@ -432,8 +445,8 @@ export default {
     },
     //计算当前章节阅读的字数
     computeChapterPos() {
-      //dom没渲染时再nextTick中调用
-      if (!this.$refs.chapter[0]) return this.$nextTick(this.computeChapterPos);
+      //dom没渲染时 返回0
+      if (!this.$refs.chapter[0]) return 0;
       //计算当前阅读进度对应的element
       let index = this.chapterData.findIndex(chapter => chapter.index == this.chapterIndex);
       if (index == -1) return;
@@ -457,9 +470,9 @@ export default {
     },
     toNextChapter() {
       this.$store.commit("setContentLoading", true);
-      let index = this.$store.state.readingBook.index;
+      let index = this.chapterIndex;
       index++;
-      if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
+      if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("下一章");
         this.getContent(index);
       } else {
@@ -468,9 +481,9 @@ export default {
     },
     toPreChapter() {
       this.$store.commit("setContentLoading", true);
-      let index = this.$store.state.readingBook.index;
+      let index = this.chapterIndex;
       index--;
-      if (typeof this.$store.state.readingBook.catalog[index] !== "undefined") {
+      if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("上一章");
         this.getContent(index);
       } else {
@@ -478,17 +491,21 @@ export default {
       }
     },
     saveReadingBookProgress(index, chapterPos = this.chapterPos) {
+      //保存localStorage
       let bookUrl = sessionStorage.getItem("bookUrl");
       let book = JSON.parse(localStorage.getItem(bookUrl));
       book.index = index;
       book.chapterPos = chapterPos;
       localStorage.setItem(bookUrl, JSON.stringify(book));
-      this.$store.state.readingBook.index = index;
-      this.$store.state.readingBook.chapterPos = chapterPos;
+      //保存vuex
+      this.chapterIndex = index;
+      this.chapterPos = chapterPos;
+      //保存sessionStorage
       sessionStorage.setItem("chapterIndex", index);
       sessionStorage.setItem("chapterPos", chapterPos);
-      let title = this.$store.state.readingBook.catalog[index].title;
-      ajax.post("/saveBookProgress", {
+      //保存app
+      let title = this.catalog[index].title;
+      return ajax.post("/saveBookProgress", {
         name: this.$store.state.readingBook.bookName,
         author: this.$store.state.readingBook.bookAuthor,
         durChapterIndex: index,
@@ -505,7 +522,7 @@ export default {
     },
     loadMore() {
       let index = this.chapterData.slice(-1)[0].index;
-      if (this.$store.state.readingBook.catalog.length - 1 > index) {
+      if (this.catalog.length - 1 > index) {
         this.getContent(index + 1, false);
       }
     },
