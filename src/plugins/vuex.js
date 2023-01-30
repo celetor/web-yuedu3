@@ -9,7 +9,7 @@ export default new Vuex.Store({
     connectType: "",
     newConnect: true,
     shelf: [],
-    catalog: "",
+    catalog: [],
     readingBook: {},
     popCataVisible: false,
     contentLoading: true,
@@ -61,5 +61,9 @@ export default new Vuex.Store({
     setMiniInterface(state, mini) {
       state.miniInterface = mini;
     },
+    clearReadingBook(state) {
+      state.catalog = [];
+      state.readingBook = {};
+    }
   },
 });

@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     catalog() {
-      return this.$store.state.readingBook.catalog;
+      return this.$store.state.catalog;
     },
     popCataVisible() {
       return this.$store.state.popCataVisible;
