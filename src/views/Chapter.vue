@@ -264,7 +264,7 @@ export default {
       }
     },
     catalog() {
-      return this.$store.state.catalog;
+      return this.$store.state.readingBook.catalog;
     },
     windowHeight() {
       return window.innerHeight;
