@@ -151,8 +151,9 @@ export default {
 
     this.getCatalog(bookUrl).then(
       (res) => {
-        book.catalog = res.data.data;
+        let catalog = res.data.data;
         that.$store.commit("setReadingBook", book);
+        that.$store.commit("setCatalog", catalog);
         var index = that.chapterIndex;
         this.getContent(index, true, chapterPos);
         window.addEventListener("keyup", this.handleKeyPress);
@@ -169,7 +170,7 @@ export default {
         );
         //第二次点击同一本书 页面标题不会变化
         document.title = null;
-        document.title = bookName + " | " + book.catalog[index].title;
+        document.title = bookName + " | " + catalog[index].title;
       },
       (err) => {
         that.loading.close();
@@ -180,9 +181,8 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.computeChapterPos();
-    this.saveReadingBookProgress(this.chapterIndex).finally(_ =>
-      next();
-    );
+    this.saveReadingBookProgressToBrowser(this.chapterIndex);
+    next();
   },
   destroyed() {
     window.removeEventListener("keyup", this.handleKeyPress);
@@ -199,7 +199,7 @@ export default {
     },
     chapterIndex(index) {
       document.title = sessionStorage.getItem("bookName") + " | " + this.catalog[index].title;
-      //this.saveReadingBookProgress(index);
+      //this.saveReadingBookProgressToBrowser(index);
     },
     theme(theme) {
       this.isNight = theme == 6;
@@ -264,7 +264,7 @@ export default {
       }
     },
     catalog() {
-      return this.$store.state.readingBook.catalog;
+      return this.$store.state.catalog;
     },
     windowHeight() {
       return window.innerHeight;
@@ -382,7 +382,7 @@ export default {
         //强制滚回顶层
         jump(this.$refs.top, { duration: 0 });
         //保存进度
-        //this.saveReadingBookProgress(index, chapterPos);
+        //this.saveReadingBookProgressToBrowser(index, chapterPos);
       }
       let bookUrl = sessionStorage.getItem("bookUrl");
       let title = this.catalog[index].title;
@@ -490,29 +490,20 @@ export default {
         this.$message.error("本章是第一章");
       }
     },
-    saveReadingBookProgress(index, chapterPos = this.chapterPos) {
+    saveReadingBookProgressToBrowser(index, chapterPos = this.chapterPos) {
       //保存localStorage
       let bookUrl = sessionStorage.getItem("bookUrl");
       let book = JSON.parse(localStorage.getItem(bookUrl));
       book.index = index;
       book.chapterPos = chapterPos;
       localStorage.setItem(bookUrl, JSON.stringify(book));
+      localStorage.setItem("readingRecent", JSON.stringify(book));
       //保存vuex
       this.chapterIndex = index;
       this.chapterPos = chapterPos;
       //保存sessionStorage
       sessionStorage.setItem("chapterIndex", index);
       sessionStorage.setItem("chapterPos", chapterPos);
-      //保存app
-      let title = this.catalog[index].title;
-      return ajax.post("/saveBookProgress", {
-        name: this.$store.state.readingBook.bookName,
-        author: this.$store.state.readingBook.bookAuthor,
-        durChapterIndex: index,
-        durChapterPos: chapterPos,
-        durChapterTime: new Date().getTime(),
-        durChapterTitle: title,
-      });
     },
     updateChapterData(data, reloadChapter) {
       if (reloadChapter) {

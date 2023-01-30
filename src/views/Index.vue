@@ -155,38 +155,7 @@ export default {
       spinner: "el-icon-loading",
       background: "rgb(247,247,247)",
     });
-    const that = this;
-    ajax
-      .get("/getBookshelf", {
-        timeout: 5000,
-      })
-      .then(function (response) {
-        that.loading.close();
-        that.$store.commit("setConnectType", "success");
-        if (response.data.isSuccess) {
-          //that.$store.commit("increaseBookNum", response.data.data.length);
-          that.$store.commit(
-            "addBooks",
-            response.data.data.sort(function (a, b) {
-              var x = a["durChapterTime"] || 0;
-              var y = b["durChapterTime"] || 0;
-              return y - x;
-            })
-          );
-        } else {
-          that.$message.error(response.data.errorMsg);
-        }
-        that.$store.commit("setConnectStatus", "已连接 ");
-        that.$store.commit("setNewConnect", false);
-      })
-      .catch(function (error) {
-        that.loading.close();
-        that.$store.commit("setConnectType", "danger");
-        that.$store.commit("setConnectStatus", "连接失败");
-        that.$message.error("后端连接失败");
-        that.$store.commit("setNewConnect", false);
-        throw error;
-      });
+    this.saveBookProcessToApp().finally(_=>this.fetchBookShelfData());
   },
   methods: {
     setIP() {},
@@ -263,6 +232,55 @@ export default {
             : "..") +
             "/cover?path=" +
             encodeURIComponent(coverUrl);
+    },
+    saveBookProcessToApp() {
+      if (this.$store.state.catalog == false) return this.$nextTick();
+      let index = this.$store.state.readingBook.index;
+      let chapterPos = this.$store.state.readingBook.chapterPos;
+      let title = this.$store.state.catalog[index].title;
+
+      return ajax.post("/saveBookProgress", {
+        name: this.$store.state.readingBook.bookName,
+        author: this.$store.state.readingBook.bookAuthor,
+        durChapterIndex: index,
+        durChapterPos: chapterPos,
+        durChapterTime: new Date().getTime(),
+        durChapterTitle: title,
+      }).then(_=>this.$store.commit("clearReadingBook"));
+    },
+    fetchBookShelfData() {
+      const that = this;
+      ajax
+        .get("/getBookshelf", {
+          timeout: 5000,
+        })
+        .then(function (response) {
+          that.loading.close();
+          that.$store.commit("setConnectType", "success");
+          if (response.data.isSuccess) {
+            //that.$store.commit("increaseBookNum", response.data.data.length);
+            that.$store.commit(
+              "addBooks",
+              response.data.data.sort(function (a, b) {
+                var x = a["durChapterTime"] || 0;
+                var y = b["durChapterTime"] || 0;
+                return y - x;
+              })
+            );
+          } else {
+            that.$message.error(response.data.errorMsg);
+          }
+          that.$store.commit("setConnectStatus", "已连接 ");
+          that.$store.commit("setNewConnect", false);
+        })
+        .catch(function (error) {
+          that.loading.close();
+          that.$store.commit("setConnectType", "danger");
+          that.$store.commit("setConnectStatus", "连接失败");
+          that.$message.error("后端连接失败");
+          that.$store.commit("setNewConnect", false);
+          throw error;
+        });
     },
   },
   computed: {
