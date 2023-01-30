@@ -180,9 +180,10 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.computeChapterPos();
-    this.saveReadingBookProgress(this.chapterIndex).finally(_ =>
-      next();
-    );
+    this.saveReadingBookProgress(this.chapterIndex)
+      .finally(_ =>
+        next()
+      );
   },
   destroyed() {
     window.removeEventListener("keyup", this.handleKeyPress);
