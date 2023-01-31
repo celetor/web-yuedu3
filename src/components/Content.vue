@@ -22,7 +22,9 @@ export default {
             //其余情况的图片视为内嵌文字
             //先替换src为data-src 使用v-lazy-container实现懒加载
             const html = this.replaceImageSrc(a);
-            return <p v-lazy-container style={style} domPropsInnerHTML={html} />;
+            return (
+              <p v-lazy-container style={style} domPropsInnerHTML={html} />
+            );
           })}
         </div>
       );
