@@ -470,22 +470,21 @@ export default {
     },
     toNextChapter() {
       this.$store.commit("setContentLoading", true);
-      let index = this.chapterIndex;
-      index++;
+      let index = this.chapterIndex + 1;
+      
       if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("下一章");
-        this.getContent(index);
+        this.getContent(++this.chapterIndex);
       } else {
         this.$message.error("本章是最后一章");
       }
     },
     toPreChapter() {
       this.$store.commit("setContentLoading", true);
-      let index = this.chapterIndex;
-      index--;
+      let index = this.chapterIndex -1;
       if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("上一章");
-        this.getContent(index);
+        this.getContent(--this.chapterIndex);
       } else {
         this.$message.error("本章是第一章");
       }
