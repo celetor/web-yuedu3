@@ -155,7 +155,7 @@ export default {
       spinner: "el-icon-loading",
       background: "rgb(247,247,247)",
     });
-    this.saveBookProcessToApp().finally(_=>this.fetchBookShelfData());
+    this.saveBookProcessToApp().finally((_) => this.fetchBookShelfData());
   },
   methods: {
     setIP() {},
@@ -239,14 +239,16 @@ export default {
       let chapterPos = this.$store.state.readingBook.chapterPos;
       let title = this.$store.state.catalog[index].title;
 
-      return ajax.post("/saveBookProgress", {
-        name: this.$store.state.readingBook.bookName,
-        author: this.$store.state.readingBook.bookAuthor,
-        durChapterIndex: index,
-        durChapterPos: chapterPos,
-        durChapterTime: new Date().getTime(),
-        durChapterTitle: title,
-      }).then(_=>this.$store.commit("clearReadingBook"));
+      return ajax
+        .post("/saveBookProgress", {
+          name: this.$store.state.readingBook.bookName,
+          author: this.$store.state.readingBook.bookAuthor,
+          durChapterIndex: index,
+          durChapterPos: chapterPos,
+          durChapterTime: new Date().getTime(),
+          durChapterTitle: title,
+        })
+        .then((_) => this.$store.commit("clearReadingBook"));
     },
     fetchBookShelfData() {
       const that = this;
@@ -286,10 +288,11 @@ export default {
   computed: {
     shelf() {
       let shelf = this.$store.state.shelf;
-      return shelf.filter(book => {
-        if (this.search == "") return true
-        return book.name.includes(this.search) ||
-        book.author.includes(this.search)
+      return shelf.filter((book) => {
+        if (this.search == "") return true;
+        return (
+          book.name.includes(this.search) || book.author.includes(this.search)
+        );
       });
     },
     connectStatus() {

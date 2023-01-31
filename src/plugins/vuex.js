@@ -64,6 +64,6 @@ export default new Vuex.Store({
     clearReadingBook(state) {
       state.catalog = [];
       state.readingBook = {};
-    }
+    },
   },
 });

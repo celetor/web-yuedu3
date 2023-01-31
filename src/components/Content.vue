@@ -52,14 +52,17 @@ export default {
     },
     replaceImgSrcWithLegado(src) {
       //相对链接 | 显示带有urlOption 先替换，隐式带有的通过onerror替换
-      if (!/^http/.test(src) || /,\s*\{.*\}$/.test(src)) return getImageFromLegado(src);
+      if (!/^http/.test(src) || /,\s*\{.*\}$/.test(src))
+        return getImageFromLegado(src);
       return src;
     },
     parseHtml(content) {
       //段落内可能含有多个img标签 并且来源可能不是网络资源，正则替换
       const imgPattern = /<img[^>]*src="([^"]*(?:"[^>]+\})?)"[^>]*>/g;
       for (let [match, src] of content.matchAll(imgPattern)) {
-        const img = `<img src="${this.replaceImgSrcWithLegado(src)}" onerror="this.src='${getImageFromLegado(src)}';this.onerror=null">`;
+        const img = `<img src="${this.replaceImgSrcWithLegado(
+          src
+        )}" onerror="this.src='${getImageFromLegado(src)}';this.onerror=null">`;
         content = content.replace(match, img);
       }
       return content;

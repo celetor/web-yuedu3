@@ -138,7 +138,11 @@ export default {
     let chapterIndex = Number(sessionStorage.getItem("chapterIndex") || 0);
     let chapterPos = Number(sessionStorage.getItem("chapterPos") || 0);
     var book = JSON.parse(localStorage.getItem(bookUrl));
-    if (book == null || chapterIndex != book.index || chapterPos != book.chapterPos) {
+    if (
+      book == null ||
+      chapterIndex != book.index ||
+      chapterPos != book.chapterPos
+    ) {
       book = {
         bookName: bookName,
         bookAuthor: bookAuthor,
@@ -198,7 +202,8 @@ export default {
       this.addReadingObserve();
     },
     chapterIndex(index) {
-      document.title = sessionStorage.getItem("bookName") + " | " + this.catalog[index].title;
+      document.title =
+        sessionStorage.getItem("bookName") + " | " + this.catalog[index].title;
       //this.saveReadingBookProgressToBrowser(index);
     },
     theme(theme) {
@@ -253,7 +258,7 @@ export default {
       },
       set(value) {
         this.$store.state.readingBook.index = value;
-      }
+      },
     },
     chapterPos: {
       get() {
@@ -261,7 +266,7 @@ export default {
       },
       set(value) {
         this.$store.state.readingBook.chapterPos = value;
-      }
+      },
     },
     catalog() {
       return this.$store.state.readingBook.catalog;
@@ -431,16 +436,15 @@ export default {
       this.$nextTick(() => {
         //计算chapterPos对应的段落行数
         let wordCount = 0;
-        let index = this.chapterData[0].content.findIndex(paragraph => {
+        let index = this.chapterData[0].content.findIndex((paragraph) => {
           wordCount += paragraph.length;
           return wordCount >= this.chapterPos;
         });
-        if (index == -1) index = this.chapterData[0].content.length -1;
+        if (index == -1) index = this.chapterData[0].content.length - 1;
         //跳转
-        jump(
-          this.$refs.chapter[0].children[1].children[index],
-          { duration: 0 }
-        );
+        jump(this.$refs.chapter[0].children[1].children[index], {
+          duration: 0,
+        });
       });
     },
     //计算当前章节阅读的字数
@@ -448,7 +452,9 @@ export default {
       //dom没渲染时 返回0
       if (!this.$refs.chapter[0]) return 0;
       //计算当前阅读进度对应的element
-      let index = this.chapterData.findIndex(chapter => chapter.index == this.chapterIndex);
+      let index = this.chapterData.findIndex(
+        (chapter) => chapter.index == this.chapterIndex
+      );
       if (index == -1) return;
       let element = this.$refs.chapter[index].children[1].children;
       //计算已读字数
@@ -471,7 +477,7 @@ export default {
     toNextChapter() {
       this.$store.commit("setContentLoading", true);
       let index = this.chapterIndex + 1;
-      
+
       if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("下一章");
         this.getContent(++this.chapterIndex);
@@ -481,7 +487,7 @@ export default {
     },
     toPreChapter() {
       this.$store.commit("setContentLoading", true);
-      let index = this.chapterIndex -1;
+      let index = this.chapterIndex - 1;
       if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("上一章");
         this.getContent(--this.chapterIndex);
@@ -580,7 +586,7 @@ export default {
             }
           }
         }
-      })
+      });
     },
     //添加所有章节到observe
     addReadingObserve() {
