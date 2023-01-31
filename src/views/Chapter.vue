@@ -441,6 +441,7 @@ export default {
           return wordCount >= this.chapterPos;
         });
         if (index == -1) index = this.chapterData[0].content.length - 1;
+        if (index == 0) return; //第一行不跳转
         //跳转
         jump(this.$refs.chapter[0].children[1].children[index], {
           duration: 0,
