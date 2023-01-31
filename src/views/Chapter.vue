@@ -269,7 +269,7 @@ export default {
       },
     },
     catalog() {
-      return this.$store.state.readingBook.catalog;
+      return this.$store.state.catalog;
     },
     windowHeight() {
       return window.innerHeight;
@@ -575,6 +575,7 @@ export default {
       this.$nextTick(() => {
         for (let { isIntersecting, target, boundingClientRect } of entries) {
           let titleElement = target.querySelector(".title");
+          if (!titleElement) return;
           let chapterTitleIndex = parseInt(titleElement.getAttribute("index"));
           if (isIntersecting) {
             this.chapterIndex = chapterTitleIndex;
