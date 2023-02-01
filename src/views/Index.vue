@@ -136,6 +136,7 @@ export default {
         author: "",
         url: "",
         chapterIndex: 0,
+        chapterPos: 0,
       },
     };
   },
