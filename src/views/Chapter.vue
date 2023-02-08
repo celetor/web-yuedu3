@@ -204,7 +204,8 @@ export default {
     chapterIndex(index) {
       document.title =
         sessionStorage.getItem("bookName") + " | " + this.catalog[index].title;
-      this.saveReadingBookProgressToBrowser(index);
+      //章节变动时chapterPos视为0
+      this.saveReadingBookProgressToBrowser(index, 0);
       this.$store.dispatch("saveBookProcess");
     },
     theme(theme) {
