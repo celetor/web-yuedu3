@@ -156,9 +156,10 @@ export default {
       spinner: "el-icon-loading",
       background: "rgb(247,247,247)",
     });
-    this.$store.dispatch("saveBookProcess")
+    this.$store
+      .dispatch("saveBookProcess")
       .then(() => this.$store.commit("clearReadingBook"))
-      .finally(() =>this.fetchBookShelfData());
+      .finally(() => this.fetchBookShelfData());
   },
   methods: {
     setIP() {},

@@ -72,7 +72,8 @@ export default new Vuex.Store({
     saveBookProcess({ state }) {
       return new Promise((resolve, reject) => {
         if (state.catalog.length == 0) return resolve();
-        const { index, chapterPos, bookName, bookAuthor } = state.readingBook.index;
+        const { index, chapterPos, bookName, bookAuthor } =
+          state.readingBook.index;
         let title = state.catalog[index].title;
 
         ajax
@@ -85,7 +86,7 @@ export default new Vuex.Store({
             durChapterTitle: title,
           })
           .then(() => resolve())
-          .catch(error => reject(error))
+          .catch((error) => reject(error));
       });
     },
   },
