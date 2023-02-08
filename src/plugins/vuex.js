@@ -73,8 +73,9 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         if (state.catalog.length == 0) return resolve();
         const { index, chapterPos, bookName, bookAuthor } =
-          state.readingBook.index;
-        let title = state.catalog[index].title;
+          state.readingBook;
+        let title = state.catalog[index]?.title;
+        if (!title) return resolve();
 
         ajax
           .post("/saveBookProgress", {
