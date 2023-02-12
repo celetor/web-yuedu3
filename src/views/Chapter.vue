@@ -389,7 +389,7 @@ export default {
         //强制滚回顶层
         jump(this.$refs.top, { duration: 0 });
         //保存进度
-        //this.saveReadingBookProgressToBrowser(index, chapterPos);
+        this.saveReadingBookProgressToBrowser(index, chapterPos);
       }
       let bookUrl = sessionStorage.getItem("bookUrl");
       let title = this.catalog[index].title;
