@@ -386,9 +386,9 @@ export default {
         }
         //强制滚回顶层
         jump(this.$refs.top, { duration: 0 });
+        //从目录，按钮切换章节时保存进度 预加载时不保存
+        this.saveReadingBookProgressToBrowser(index, chapterPos);
       }
-      //保存进度
-      this.saveReadingBookProgressToBrowser(index, chapterPos);
       let bookUrl = sessionStorage.getItem("bookUrl");
       let title = this.catalog[index].title;
       let chapterIndex = this.catalog[index].index;
