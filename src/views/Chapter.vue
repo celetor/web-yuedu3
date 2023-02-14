@@ -204,8 +204,6 @@ export default {
     chapterIndex(index) {
       document.title =
         sessionStorage.getItem("bookName") + " | " + this.catalog[index].title;
-      //章节变动时chapterPos视为0
-      this.saveReadingBookProgressToBrowser(index, 0);
       this.$store.dispatch("saveBookProcess");
     },
     theme(theme) {
@@ -388,9 +386,9 @@ export default {
         }
         //强制滚回顶层
         jump(this.$refs.top, { duration: 0 });
-        //保存进度
-        this.saveReadingBookProgressToBrowser(index, chapterPos);
       }
+      //保存进度
+      this.saveReadingBookProgressToBrowser(index, chapterPos);
       let bookUrl = sessionStorage.getItem("bookUrl");
       let title = this.catalog[index].title;
       let chapterIndex = this.catalog[index].index;
@@ -438,6 +436,7 @@ export default {
       this.$nextTick(() => {
         //计算chapterPos对应的段落行数
         let wordCount = 0;
+        let that = this;
         let index = this.chapterData[0].content.findIndex((paragraph) => {
           wordCount += paragraph.length;
           return wordCount >= this.chapterPos;
@@ -447,6 +446,7 @@ export default {
         //跳转
         jump(this.$refs.chapter[0].children[1].children[index], {
           duration: 0,
+          callback: () => that.chapterPos = 0,
         });
       });
     },
@@ -483,7 +483,7 @@ export default {
 
       if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("下一章");
-        this.getContent(++this.chapterIndex);
+        this.getContent(index);
       } else {
         this.$message.error("本章是最后一章");
       }
@@ -493,7 +493,7 @@ export default {
       let index = this.chapterIndex - 1;
       if (typeof this.catalog[index] !== "undefined") {
         this.$message.info("上一章");
-        this.getContent(--this.chapterIndex);
+        this.getContent(index);
       } else {
         this.$message.error("本章是第一章");
       }
