@@ -446,7 +446,7 @@ export default {
         //跳转
         jump(this.$refs.chapter[0].children[1].children[index], {
           duration: 0,
-          callback: () => that.chapterPos = 0,
+          callback: () => (that.chapterPos = 0),
         });
       });
     },
