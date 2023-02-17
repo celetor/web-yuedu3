@@ -501,10 +501,14 @@ export default {
     saveReadingBookProgressToBrowser(index, chapterPos = this.chapterPos) {
       //保存localStorage
       let bookUrl = sessionStorage.getItem("bookUrl");
-      let book = JSON.parse(localStorage.getItem(bookUrl));
+      var book = JSON.parse(localStorage.getItem(bookUrl));
       book.index = index;
       book.chapterPos = chapterPos;
       localStorage.setItem(bookUrl, JSON.stringify(book));
+      //最近阅读
+      book = JSON.parse(localStorage.getItem("readingRecent"));
+      book.chapterIndex = index;
+      book.chapterPos = chapterPos;
       localStorage.setItem("readingRecent", JSON.stringify(book));
       //保存vuex
       this.chapterIndex = index;
