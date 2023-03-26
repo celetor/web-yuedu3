@@ -42,6 +42,7 @@ jobs:
 
       - name: Build
         run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
           npm run-script build
 
       - name: Set Env

@@ -19,6 +19,10 @@
 
 ## 使用方法
 
+> node版本大于17，先[设置环境变量NODE_OPTIONS](https://github.com/webpack/webpack/issues/14532)
+> ```bash
+> export NODE_OPTIONS=--openssl-legacy-provider
+> ```
 ```shell
 yarn install
 #安装项目

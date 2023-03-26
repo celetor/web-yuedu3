@@ -25,6 +25,7 @@ jobs:
 
       - name: Build
         run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
           npm install
           npm run-script build
           zip -q -r ${{github.ref_name}}_${{env.VERSION}}.zip ./dist
