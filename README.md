@@ -1,3 +1,5 @@
+vue3版本 https://github.com/gedoor/legado/tree/master/modules/web
+***
 # 「阅读3.0」 web 端（已打包进阅读3.0，不能设置IP）
 
 本程序为「阅读3.0」的配套 web 端，需要保证手机和电脑在同一局域网内，然后手机端打开 web 服务。
