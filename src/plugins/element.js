@@ -7,11 +7,12 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   Table,
+  Tooltip,
   TableColumn,
   Popover,
   Loading,
   Input,
-  Tag
+  Tag,
 } from "element-ui";
 
 Vue.use(Button);
@@ -23,6 +24,7 @@ Vue.use(TableColumn);
 Vue.use(Popover);
 Vue.use(Input);
 Vue.use(Tag);
+Vue.use(Tooltip);
 Vue.use(Loading.directive);
 
 Vue.prototype.$msgbox = MessageBox;

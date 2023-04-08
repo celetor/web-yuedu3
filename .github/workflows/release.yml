@@ -1,101 +1,41 @@
-name: Merge And Release
+name: Release
 
-on: [workflow_dispatch, push]
+on: [workflow_dispatch]
 
 
 jobs:
-  master:
+  release:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout web-yuedu3 Project
-        uses: actions/checkout@v2
-        with:
-          ref: master
-          path: master
+      - name: Checkout master
+        uses: actions/checkout@v3
 
-      - name: Checkout web-yuedu3 Project
-        uses: actions/checkout@v2
+      - uses: actions/cache@v3
         with:
-          fetch-depth: 0
-          ref: slave
-          path: slave
-          
-      - name: Build Master
-        working-directory: master
-        run: |
-          npm install
-          npm run-script build
-          zip -q -r master_dist.zip ./dist
-
-      - name: Build Slave
-        working-directory: slave
-        run: |
-          git config --global user.name  Robot
-          git config --global user.email github-actions@github.com
-          git pull origin master --allow-unrelated-histories
-          git push origin slave
-          npm install
-          npm run-script build
-          zip -q -r slave_dist.zip ./dist
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Set Env
         shell: bash
         run: |
-          time="$(date -u -d '+8 hour' '+%Y.%m.%d')"
-          version="v${time}"
-          echo "APP_VER=$version" >> $GITHUB_ENV
-          tag_name=$(curl -s https://api.github.com/repos/Celeter/web-yuedu3/releases/latest|jq .tag_name -r)
-          echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
-          
-      - name: Create Release
-        if: ${{ env.TAG_NAME != env.APP_VER }}
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          version="v$(date -d "8 hour" -u +3.%y.%m%d%H)"
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+      - name: Build
+        run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm install
+          npm run-script build
+          zip -q -r ${{github.ref_name}}_${{env.VERSION}}.zip ./dist
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.APP_VER }}
-          release_name: ${{ env.APP_VER }}
+          name: ${{ env.VERSION }}
+          tag_name: ${{ env.VERSION }}
           draft: false
           prerelease: false
-
-      - name: Upload Release Asset Master
-        if: ${{ env.TAG_NAME != env.APP_VER }}
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/master/master_dist.zip
-          asset_name: master_${{ env.APP_VER }}.zip
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset Slave
-        if: ${{ env.TAG_NAME != env.APP_VER }}
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/slave/slave_dist.zip
-          asset_name: slave_${{ env.APP_VER }}.zip
-          asset_content_type: application/octet-stream
-
-      - name: Upload Master
-        if: ${{ env.TAG_NAME == env.APP_VER }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: master_${{ env.APP_VER }}
-          path: ${{ github.workspace }}/master/dist
-          if-no-files-found: error
-
-      - name: Upload Slave
-        if: ${{ env.TAG_NAME == env.APP_VER }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: slave_${{ env.APP_VER }}
-          path: ${{ github.workspace }}/slave/dist
-          if-no-files-found: error
-
+          files: ${{ github.workspace }}/*.zip
 

@@ -32,6 +32,46 @@
             >{{ font }}</span
           >
         </li>
+        <li class="font-list">
+          <i>自定字体</i>
+          <el-tooltip effect="dark" content="自定义的字体名称" placement="top">
+            <input
+              type="text"
+              class="font-item font-item-input"
+              v-model="customFontName"
+              placeholder="请输入自定义的字体名称"
+            />
+          </el-tooltip>
+
+          <el-popover
+            placement="top"
+            width="180"
+            v-model="customFontSavePopVisible"
+          >
+            <p>
+              请确认输入的字体名称完整无误，并且该字体已经安装在您的设备上。
+            </p>
+            <p>确定保存吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button
+                size="mini"
+                type="text"
+                @click="customFontSavePopVisible = false"
+                >取消</el-button
+              >
+              <el-button
+                type="primary"
+                size="mini"
+                @click="
+                  setCustomFont();
+                  customFontSavePopVisible = false;
+                "
+                >确定</el-button
+              >
+            </div>
+            <span type="text" class="font-item" slot="reference">保存</span>
+          </el-popover>
+        </li>
         <li class="font-size">
           <i>字体大小</i>
           <div class="resize">
@@ -44,7 +84,7 @@
             >
           </div>
         </li>
-        <li class="read-width">
+        <li class="read-width" v-if="!$store.state.miniInterface">
           <i>页面宽度</i>
           <div class="resize">
             <span class="less" @click="lessReadWidth"
@@ -56,6 +96,23 @@
             >
           </div>
         </li>
+        <li class="infinite-loading">
+          <i>无限加载</i>
+          <span
+            class="infinite-loading-item"
+            :key="0"
+            :class="{ selected: infiniteLoading == false }"
+            @click="setInfiniteLoading(false)"
+            >关闭</span
+          >
+          <span
+            class="infinite-loading-item"
+            :key="1"
+            :class="{ selected: infiniteLoading == true }"
+            @click="setInfiniteLoading(true)"
+            >开启</span
+          >
+        </li>
       </ul>
     </div>
   </div>
@@ -65,6 +122,7 @@
 import "../assets/fonts/popfont.css";
 import "../assets/fonts/iconfont.css";
 import config from "../plugins/config";
+import ajax from "../plugins/ajax";
 export default {
   name: "ReadSettings",
   data() {
@@ -74,32 +132,34 @@ export default {
       moonIcon: "",
       themeColors: [
         {
-          background: "rgba(250, 245, 235, 0.8)"
+          background: "rgba(250, 245, 235, 0.8)",
         },
         {
-          background: "rgba(245, 234, 204, 0.8)"
+          background: "rgba(245, 234, 204, 0.8)",
         },
         {
-          background: "rgba(230, 242, 230, 0.8)"
+          background: "rgba(230, 242, 230, 0.8)",
         },
         {
-          background: "rgba(228, 241, 245, 0.8)"
+          background: "rgba(228, 241, 245, 0.8)",
         },
         {
-          background: "rgba(245, 228, 228, 0.8)"
+          background: "rgba(245, 228, 228, 0.8)",
         },
         {
-          background: "rgba(224, 224, 224, 0.8)"
+          background: "rgba(224, 224, 224, 0.8)",
         },
         {
-          background: "rgba(0, 0, 0, 0.5)"
-        }
+          background: "rgba(0, 0, 0, 0.5)",
+        },
       ],
       moonIconStyle: {
         display: "inline",
-        color: "rgba(255,255,255,0.2)"
+        color: "rgba(255,255,255,0.2)",
       },
-      fonts: ["雅黑", "宋体", "楷书"]
+      fonts: ["雅黑", "宋体", "楷书"],
+      customFontName: this.$store.state.config.customFontName,
+      customFontSavePopVisible: false,
     };
   },
   mounted() {
@@ -118,7 +178,7 @@ export default {
     },
     popupTheme() {
       return {
-        background: config.themes[this.config.theme].popup
+        background: config.themes[this.config.theme].popup,
       };
     },
     selectedTheme() {
@@ -132,7 +192,10 @@ export default {
     },
     readWidth() {
       return this.$store.state.config.readWidth;
-    }
+    },
+    infiniteLoading() {
+      return this.$store.state.config.infiniteLoading;
+    },
   },
   methods: {
     setTheme(theme) {
@@ -147,34 +210,54 @@ export default {
       }
       let config = this.config;
       config.theme = theme;
-      this.$store.commit("setConfig", config);
+      this.saveConfig(config);
     },
     setFont(font) {
       let config = this.config;
       config.font = font;
-      this.$store.commit("setConfig", config);
+      this.saveConfig(config);
+    },
+    setCustomFont() {
+      let config = this.config;
+      config.font = -1;
+      config.customFontName = this.customFontName;
+      this.saveConfig(config);
     },
     moreFontSize() {
       let config = this.config;
       if (config.fontSize < 48) config.fontSize += 2;
-      this.$store.commit("setConfig", config);
+      this.saveConfig(config);
     },
     lessFontSize() {
       let config = this.config;
       if (config.fontSize > 12) config.fontSize -= 2;
-      this.$store.commit("setConfig", config);
+      this.saveConfig(config);
     },
     moreReadWidth() {
       let config = this.config;
-      if (config.readWidth < 960) config.readWidth += 160;
-      this.$store.commit("setConfig", config);
+      /*if (config.readWidth < 960)*/
+      config.readWidth += 160;
+      this.saveConfig(config);
     },
     lessReadWidth() {
       let config = this.config;
       if (config.readWidth > 640) config.readWidth -= 160;
+      this.saveConfig(config);
+    },
+    setInfiniteLoading(loading) {
+      let config = this.config;
+      config.infiniteLoading = loading;
+      this.saveConfig(config);
+    },
+    saveConfig(config) {
       this.$store.commit("setConfig", config);
-    }
-  }
+      localStorage.setItem("config", JSON.stringify(config));
+      this.uploadConfig(config);
+    },
+    uploadConfig(config) {
+      ajax.post("/saveReadConfig", config);
+    },
+  },
 };
 </script>
 
@@ -192,8 +275,8 @@ export default {
 .settings-wrapper {
   user-select: none;
   margin: -13px;
-  width: 478px;
-  height: 300px;
+  // width: 478px;
+  // height: 350px;
   text-align: left;
   padding: 40px 0 40px 24px;
   background: #ede7da url('../assets/imgs/themes/popup_1.png') repeat;
@@ -229,6 +312,7 @@ export default {
           width: 34px;
           height: 34px;
           margin-right: 16px;
+          margin-top: 5px;
           border-radius: 100%;
           display: inline-block;
           cursor: pointer;
@@ -249,10 +333,10 @@ export default {
         }
       }
 
-      .font-list {
+      .font-list, .infinite-loading {
         margin-top: 28px;
 
-        .font-item {
+         .font-item, .infinite-loading-item,{
           width: 78px;
           height: 34px;
           cursor: pointer;
@@ -263,13 +347,16 @@ export default {
           display: inline-block;
           font: 14px / 34px PingFangSC-Regular, HelveticaNeue-Light, 'Helvetica Neue Light', 'Microsoft YaHei', sans-serif;
         }
-
+        .font-item-input{
+           width: 168px;
+           color: #000000;
+        }
         .selected {
           color: #ed4259;
           border: 1px solid #ed4259;
         }
 
-        .font-item:hover {
+        .font-item:hover, .infinite-loading-item:hover {
           border: 1px solid #ed4259;
           color: #ed4259;
         }
@@ -333,8 +420,8 @@ export default {
     color: #ed4259;
   }
 
-  >>>.font-list {
-    .font-item {
+  >>>.font-list, .infinite-loading {
+    .font-item, .infinite-loading-item {
       border: 1px solid #666;
       background: rgba(45, 45, 45, 0.5);
     }
@@ -364,8 +451,8 @@ export default {
     color: rgba(255, 255, 255, 0.2);
   }
 
-  >>>.font-list {
-    .font-item {
+  >>>.font-list, .infinite-loading {
+    .font-item, .infinite-loading-item {
       background: rgba(255, 255, 255, 0.5);
       border: 1px solid rgba(0, 0, 0, 0.1);
     }
@@ -378,6 +465,14 @@ export default {
     b {
       border-right: 1px solid #e5e5e5;
     }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .settings-wrapper  i {
+    display: flex !important;
+    flex-wrap: wrap;
+    padding-bottom: 5px !important;
   }
 }
 </style>

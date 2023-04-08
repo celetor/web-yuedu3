@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import ajax from "./ajax";
 
 Vue.use(Vuex);
 
@@ -9,7 +10,7 @@ export default new Vuex.Store({
     connectType: "",
     newConnect: true,
     shelf: [],
-    catalog: "",
+    catalog: [],
     readingBook: {},
     popCataVisible: false,
     contentLoading: true,
@@ -18,9 +19,11 @@ export default new Vuex.Store({
       theme: 0,
       font: 0,
       fontSize: 18,
-      readWidth: 800
+      readWidth: 800,
+      infiniteLoading: false,
     },
-    readSettingsVisible: false
+    miniInterface: false,
+    readSettingsVisible: false,
   },
   mutations: {
     setConnectStatus(state, connectStatus) {
@@ -55,6 +58,36 @@ export default new Vuex.Store({
     },
     setShowContent(state, visible) {
       state.showContent = visible;
-    }
-  }
+    },
+    setMiniInterface(state, mini) {
+      state.miniInterface = mini;
+    },
+    clearReadingBook(state) {
+      state.catalog = [];
+      state.readingBook = {};
+    },
+  },
+  actions: {
+    //保存进度到app
+    saveBookProcess({ state }) {
+      return new Promise((resolve, reject) => {
+        if (state.catalog.length == 0) return resolve();
+        const { index, chapterPos, bookName, bookAuthor } = state.readingBook;
+        let title = state.catalog[index]?.title;
+        if (!title) return resolve();
+
+        ajax
+          .post("/saveBookProgress", {
+            name: bookName,
+            author: bookAuthor,
+            durChapterIndex: index,
+            durChapterPos: chapterPos,
+            durChapterTime: new Date().getTime(),
+            durChapterTitle: title,
+          })
+          .then(() => resolve())
+          .catch((error) => reject(error));
+      });
+    },
+  },
 });

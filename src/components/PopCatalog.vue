@@ -1,8 +1,6 @@
 <template>
   <div class="cata-wrapper" :style="popupTheme">
-    <div class="title">
-      目录
-    </div>
+    <div class="title">目录</div>
     <div
       class="data-wrapper"
       ref="cataData"
@@ -35,12 +33,12 @@ export default {
   data() {
     return {
       isNight: this.$store.state.config.theme == 6,
-      index: this.$store.state.readingBook.index
+      index: this.$store.state.readingBook.index,
     };
   },
   computed: {
     catalog() {
-      return this.$store.state.readingBook.catalog;
+      return this.$store.state.catalog;
     },
     popCataVisible() {
       return this.$store.state.popCataVisible;
@@ -50,9 +48,9 @@ export default {
     },
     popupTheme() {
       return {
-        background: config.themes[this.theme].popup
+        background: config.themes[this.theme].popup,
       };
-    }
+    },
   },
   mounted() {},
   watch: {
@@ -64,12 +62,12 @@ export default {
       }
     },
     popCataVisible() {
-      this.$nextTick(function() {
+      this.$nextTick(function () {
         let index = this.$store.state.readingBook.index;
         let wrapper = this.$refs.cataData;
         jump(this.$refs.cata[index], { container: wrapper, duration: 0 });
       });
-    }
+    },
   },
   methods: {
     isSelected(index) {
@@ -80,8 +78,8 @@ export default {
       this.$store.commit("setPopCataVisible", false);
       this.$store.commit("setContentLoading", true);
       this.$emit("getContent", this.index);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -142,6 +140,12 @@ export default {
     >>>.log {
       border-bottom: 1px solid #f2f2f2;
     }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .cata-wrapper .data-wrapper .cata .log {
+  width: 100%;
   }
 }
 </style>
